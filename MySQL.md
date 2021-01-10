@@ -51,9 +51,13 @@ desc departments
 
 ### 数据查询语言DQL
 
-基本结构是由SELECT子句，FROM子句，WHERE子句组成的查询块：
-
-> SELECT 	<字段名表>	FROM 	<表或视图名>	WHERE 	<查询条件>
+```mysql
+select [查询列表] from [表名] where [条件] 
+group by [分组条件]
+having [筛选条件]
+order by [排序列表] [asc|desc]
+limit
+```
 
 
 
@@ -62,10 +66,28 @@ desc departments
 数据操纵语言DML主要有三种形式：
 
 - 插入：INSERT
+
+	```mysql
+	INSERT INTO table_name (column1,column2,column3,...)
+	VALUES (value1,value2,value3,...);
+	```
+
 - 更新：UPDATE
+
+	```mysql
+	UPDATE table_name
+	SET column1=value1,column2=value2,...
+	WHERE some_column=some_value;
+	```
+
 - 删除：DELETE
 
+	```mysql
+	DELETE FROM table_name
+	WHERE some_column=some_value;
+	```
 
+	
 
 ### 数据定义语言DDL
 
@@ -132,79 +154,62 @@ SQL>SET AUTOCOMMIT ON；
 
 - 本计算机启动/停止MySQL服务
 
-```
+```mysql
 net start MySQL80
 net stop MySQL80
 ```
 
-
-
 - 查看服务器版本
 
-```
+```mysql
 select version();
 ```
 
-
-
 - 通过Windows自带的客户端登陆/推出MySQL
 
-```
+```mysql
 #登录
 mysql -h 主机名 -P 端口号 -u 用户名 -p 密码
-
 #退出
 exit 或 Ctrl+c
 ```
 
-
-
 - 查看当前所有数据库
 
-```sql
+```mysql
 show database;
 ```
 
-
-
 - 打开指定的库
 
-```
+```mysql
 use 库名;
 ```
 
-
-
 - 查看当前库的所有的表
 
-```
+```mysql
 show tables;
 ```
 
-
-
 - 查看其他库的所有表
 
-```
+```mysql
 show tables from 库名;
 ```
 
-
-
 - 创建表
 
-```
+```mysql
 create table 表名{
 	列名 列类型,
 	列名 列类型
 }
 ```
 
-
-
 - 查看表结构
 
-```
+```mysql
 desc 表名;
 ```
 
@@ -309,12 +314,16 @@ MySQL中的+号：
 
 	
 
-## 2、条件查询
+#### 筛选符号
 
 
 
 ```mysql
-select [查询列表] from [表名] where [条件]
+select [查询列表] from [表名] where [条件] 
+group by [分组条件]
+having [筛选条件]
+order by [排序列表] [asc|desc]
+limit
 ```
 
 
@@ -334,7 +343,7 @@ select [查询列表] from [表名] where [条件]
 
 
 
-## 3、模糊查询
+## 2、模糊查询
 
 
 
@@ -414,7 +423,7 @@ select last_name,bonus_rate from employees where bonus_rate is not null;
 
 
 
-## 4、排序查询
+## 3、排序查询
 
 
 
@@ -468,7 +477,7 @@ ORDER BY salary ASC,employee_id DESC
 
 
 
-##  5、常见函数
+##  4、常见函数
 
 
 
@@ -479,7 +488,7 @@ select ifnull(bonus_rate,0) as 奖金率 from employees;
 
 
 
-### 单行函数
+### (1)单行函数
 
 #### 字符函数
 
@@ -674,7 +683,7 @@ from employees;
 
 
 
-### 分组函数
+### (2)分组函数
 
 功能：做统计使用。又称为统计函数、聚合函数、组函数
 
@@ -715,6 +724,8 @@ count	计算非空值个数
 
 - `count`函数
 
+	- **==count(*)常用于计算个数==**
+	
 	```mysql
 	#统计出符合条件的记录数
 	select count(*) from employees;
@@ -722,9 +733,9 @@ count	计算非空值个数
 	
 	select count(*),department_id from employees
 	group by department_id;
-	
+
 	#效率
-#myisam引擎下，count(*)的效率高
+	#myisam引擎下，count(*)的效率高
 	#innodb引擎下，count(*)和count(1)效率差不多，比count(字段)要高
 	```
 	
@@ -734,7 +745,11 @@ count	计算非空值个数
 
 
 
-## 6、分组查询
+## 5、分组查询
+
+> 在 SQL 中增加 HAVING 子句原因是，WHERE 关键字无法与聚合函数一起使用。
+>
+> HAVING 子句可以让我们筛选分组后的各组数据。
 
 ```mysql
 select [查询列表] from [表名] where [条件] 
@@ -822,6 +837,272 @@ having max(salary)>12000;
 
 
 
+## 6、连接查询
+
+
+
+按功能分类
+
+### (1)内连接
+
+SQL99语法——内连接
+
+```mysql
+select [查询列表] from 表1 inner join 表2 on 连接条件
+where [筛选条件]
+```
+
+- 等值连接
+
+	> ①为表起别名——简洁美观。但是起别名后，查询里的字段则不能使用**原本表名**去做限制
+	>
+	> ②当同一个字段存在多个表里，查询时需用表名对字段做限制。
+
+	```mysql
+	#查询员工名和对应的部门名、部门id
+	select e.'department_id',department_name,last_name 
+	from employees as e inner join departments as d 
+	on e.'department_id' = d.'department_id';
+	
+	/*若是三表连接
+	select department_name,last_name 
+	from employees as e 
+	inner join department1 as d1 on e.'department_id' = d1.'department_id'
+	inner join department2 as d2 on e.'department_id' = d2.'department_id';
+	
+	
+	*/
+	
+	#查询每个城市的部门数
+	select count(*) as 个数,city 
+	from department as d inner join location as l 
+	on d.'location_id' = l.'location_id'
+	group by city;
+	```
+
+- 非等值连接
+
+	```mysql
+	#查询员工的工资和工资级别
+	#job_grades表，储存的是工资级别ABCDEF的各级别工资范围
+	select salary,grade_level from employees as e inner join job_grades as g
+	on salary  between g.'lowest_sal' and g.'highest_sal';
+	```
+
+- 自连接
+
+	```mysql
+	#查找员工名和他的直属上级
+	select employee_id,e.last_name,manager_id,m.last_name
+	from employees as e inner join employees as m
+	on e.employee_id = m.manager_id;
+	```
+
+	
+
+### (2)外连接
+
+SQL99语法——外连接
+
+> 应用场景：用于查询一个表中有，另一个表中可能没有的记录
+
+**特点**：
+
+1. 外连接查询的是主表中所有的记录
+
+	> 如果从表中有和他匹配的，则显示匹配的值
+	>
+	> 如果从表中没有和他匹配的，则显示NULL
+
+2. 左外连接，`left join/left out join`         左边的是主表
+
+	右外连接，`right join/right out join`     右边的是主表
+
+
+
+- 左外连接
+
+  ```mysql
+  #查询女生表中，有男朋友的女生
+  select g.'name',b.* 
+  from girl as g left outer join boy as b on g.'boyfriend_id'=b.'id'
+  where b.'id' is not null;#因为是表里存在的字段，且没有分组，所以不用having做筛选
+  ```
+
+- 右外连接
+
+	```mysql
+	#查询女生表中，有男朋友的女生
+	select g.'name',b.* 
+	from boy as b right outer join girl as g on g.'boyfriend_id'=b.'id'
+	where b.'id' is not null;
+	```
+
+- 全外连接
+
+> FULL OUTER JOIN 关键字结合了 LEFT JOIN 和 RIGHT JOIN 的结果。
+
+```mysql
+/*
+FULL OUTER JOIN 关键字返回左表（Websites）和右表（access_log）中所有的行。
+
+如果 "Websites" 表中的行在 "access_log" 中没有匹配，会列出这些行
+如果 "access_log" 表中的行在 "Websites" 表中没有匹配，也会列出这些行。
+*/
+SELECT Websites.name, access_log.count, access_log.date
+FROM Websites FULL OUTER JOIN access_log
+ON Websites.id=access_log.site_id
+ORDER BY access_log.count DESC;
+```
+
+
+
+### (3)交叉连接
+
+SQL99语法——交叉连接
+
+> 作笛卡尔乘积
+
+```mysql
+#girl表11条数据，boy表4条数据，查询结果是44条数据
+select g.*,b.* 
+from girl as g cross join boy as b ;
+```
+
+
+
+
+
+
+
+## 7、子查询
+
+> 含义：出现在其他语句中的select语句，称为子查询或内查询
+>
+> 按结果集的行列数不同：
+>
+> - 标量子查询（结果集只有一行一列）
+> - 列子查询（结果集只有一列多行）
+> 	- in/not in    ——等于列表中的任意一个
+> 	- any/some ——和子查询返回的某一个值比较
+> 	- all              ——和子查询返回的所有值比较
+> - 行子查询（结果集只有一行多列）
+> - 表子查询（结果集为多行多列）
+
+按子查询出现的位置：
+
+- `select`后面
+
+	- 仅支持标量子查询（结果集只有一行一列）
+
+	```mysql
+	#查询每个部门的员工个数
+	select d.*,(
+	    select count(*) from employees as e where e.department_id = d.department_id
+	) as 个数
+	from departments as d
+	```
+
+	
+
+- `from`后面
+
+	- 支持表子查询
+
+		> 将子查询结果充当一张表，要求必须对该表起别名
+
+	```mysql
+	#查询每个部门的平均工资等级
+	select ag_dep.* ,grade_level
+	from(
+	    select avg(salary) as ag,department_id from employees
+	    group by department_id
+	) as ag_dep
+	inner join job_grades  on ag_dep.ag between lowest_sal and highest_sal;
+	```
+
+	
+
+- `where`或`having`后面
+
+	- 标量子查询
+
+	```mysql
+	#谁的工资比Abel高
+	select * from employees 
+	where salary>(select salary from employees where last_name='Abel');
+	
+	#查询最低工资比50号部门高的部门id和最低工资
+	select min(salary),department_id from employees
+	group by department_id
+	having min(salary)>(select min(salary) from employees where department_id = 50);
+	```
+
+	- 列子查询
+
+	```mysql
+	#返回location_id是1400或1700的部门中的所有员工姓名
+	select last_name from employees 
+	where department_id in
+	(
+	    select distinct department_id from departments where location_id in (1400,1700)
+	);
+	
+	#返回其他工种中比job_id为IT_PROG工种任意员工工资低的员工信息
+	select * from employees
+	where job_id !=IT_PROG and salary < 
+	any(
+	    select distinct salary from employees where job_id = IT_PROG
+	) ;
+	
+	#返回其他工种中比job_id为IT_PROG工种所有员工工资低的员工信息
+	select * from employees
+	where job_id !=IT_PROG and salary < 
+	all(
+	    select distinct salary from employees where job_id = IT_PROG
+	) ;
+	```
+
+	- 行子查询
+
+	```mysql
+	#查询员工编号最小并且工资最高的员工信息
+	select * from employees
+	where (employee_id,salary)=(
+	    select min(employee_id),max(salary)) from employees
+	    );
+	```
+
+- `exists`后面（相关子查询）
+
+	- 支持表子查询
+
+		> 语法：exist（完整的子查询）
+		>
+		> 结果：如果存在值，则返回1；不存在值，则返回0
+
+	```mysql
+	# 查询有员工的部门名
+	select department_name from departments as d
+	where exists(
+	    select * from employees as e where d.department_id = e.department_id
+	);
+	#满足这个条件的看有没有
+	#用子查询过滤主查询的结果
+	```
+
+
+
+
+
+## 8、分页查询
+
+
+
+
+
+
+
 
 
 
@@ -837,6 +1118,8 @@ select last_name from employees where last_name like '_\_%';
 #转义方式二：使用escape
 select last_name from employees where last_name like '_$_%' escape '$';
 ```
+
+
 
 
 
@@ -857,6 +1140,36 @@ select * from employees where salary <=>12000;
 
 
 
+
+
+
+
+# EX-3 ANY/SOME/ALL
+
+> **准备两个表：**
+>
+> --T1(2,3)
+> --T2(1,2,3,4)
+
+**ALL 父查询中的结果集大于子查询中每一个结果集中的值,则为真**
+
+```mysql
+SELECT * FROM T2 WHERE N>ALL (SELECT N FROM T1)#4
+```
+
+
+
+**ANY,SOME 父查询中的结果集大于子查询中任意一个结果集中的值,则为真**
+
+```mysql
+SELECT \* FROM T2 WHERE N>ANY(SELECT N FROM T1)#3、4
+SELECT \* FROM T2 WHERE N>SOME(SELECT N FROM T1)#3、4
+```
+
+
+
+
+
 # 面试题
 
 
@@ -869,4 +1182,6 @@ select * from employees where last_name like '%%' and bonus_rate like '%%';
 #不一样,如果判断的字段中有NULL值
 
 ```
+
+
 
