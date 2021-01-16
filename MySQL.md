@@ -52,11 +52,12 @@ desc departments
 ### 数据查询语言DQL
 
 ```mysql
-select [查询列表] from [表名] where [条件] 
+select [查询列表] from [表名] join [表名] on [连接条件]
+where [条件] 
 group by [分组条件]
 having [筛选条件]
 order by [排序列表] [asc|desc]
-limit
+limit offset,size
 ```
 
 
@@ -431,11 +432,12 @@ select last_name,bonus_rate from employees where bonus_rate is not null;
 - `desc`——降序
 
 ```mysql
-select [查询列表] from [表名] where [条件] 
+select [查询列表] from [表名] join [表名] on [连接条件]
+where [条件] 
 group by [分组条件]
 having [筛选条件]
 order by [排序列表] [asc|desc]
-limit
+limit offset,size
 ```
 
 
@@ -752,11 +754,12 @@ count	计算非空值个数
 > HAVING 子句可以让我们筛选分组后的各组数据。
 
 ```mysql
-select [查询列表] from [表名] where [条件] 
+select [查询列表] from [表名] join [表名] on [连接条件]
+where [条件] 
 group by [分组条件]
 having [筛选条件]
 order by [排序列表] [asc|desc]
-limit
+limit offset,size
 ```
 
 分组查询分类
@@ -1097,6 +1100,322 @@ from girl as g cross join boy as b ;
 
 ## 8、分页查询
 
+> 应用场景：当要显示的数据，一页显示不全，需要分页提交sql请求时
+>
+> 
+>
+> SELECT [查询列表] FROM [表名] LIMIT (page-1)*size , size;
+>
+> ​			page：要显示的第几页
+>
+> ​			size：每页要显示的条目数
+
+
+
+```mysql
+limit
+```
+
+
+
+```mysql
+select [查询列表] from [表名] join [表名] on [连接条件]
+where [条件] 
+group by [分组条件]
+having [筛选条件]
+order by [排序列表] [asc|desc]
+limit offset,size
+#offset:要显示条目的起始索引(起始索引从0开始)
+#size:要显示的条目个数
+```
+
+
+
+```mysql
+#查询前五条员工信息
+select * from employees limit 0,5;
+#如果索引从第一条开始，可以省略0
+select * from employees limit 5;
+
+#有奖金的员工信息，并且工资较高的前十名
+select * from employees where bonus_rate is not null
+order by salary desc
+limit 10;
+```
+
+
+
+
+
+
+
+## 9、联合查询
+
+> 将多条查询语句的结果合并为一个结果
+>
+> 应用场景：要查询的结果来自多个表，但这多个表中没有连接关系
+
+
+
+```mysql
+union
+
+/*语法
+		查询语句1
+		union
+		查询语句2
+		union
+		查询语句3
+		...
+*/
+```
+
+特点：
+
+- 要求多条查询语句的查询列数是一致的
+- 要求多条查询语句的查询结果的每一列意义相同，方便看
+- `unioin`默认去重，如果不去重，可以用 `union all`，查询结果包含重复项
+
+```mysql
+#查询部门编号>90 或 邮箱包含a 的员工信息
+select * from employees where email like '%a%'
+#union默认去重，如果不去重，可以用 union all
+union
+select * from employees where department_id > 90;
+
+#等价于
+select * from employees where email like '%a%' or department_id > 90;
+```
+
+
+
+
+
+
+
+
+
+
+
+# 四、Data Manage Language
+
+
+
+## 1、插入语句
+
+
+
+```mysql
+#方式一
+INSERT INTO table_name (column1,column2,column3,...)
+VALUES (value1,value2,value3,...);
+
+#insert into beauty values(...)	#如果表名后不加字段，则默认为全部字段
+
+#方式二
+INSERT INTO table_name
+SET 列名=值,列名=值,列名=值...
+```
+
+两种方式比较
+
+- 方式一支持插入多行，方式二不支持
+
+	```mysql
+	insert into beauty(id,name,sex,borndate)
+	values(13,'居怡娜','女','1998-04-28'),
+	(14,'居一娜','女','1998-04-28'),
+	(15,'居二娜','女','1998-04-28'),
+	(16,'居三娜','女','1998-04-28'),
+	```
+
+- 方式一支持子查询，方式二不支持
+
+	```mysql
+	#把子查询的结果集，插入进去
+	insert into beauty(id,name,phone)
+	select 26,'居四娜','13889898989';#查询了三个常量，也可以查询表
+	
+	insert into beauty(id,name,phone)
+	select id,boyname,'13889898989' from boys where id<3;
+	```
+
+	
+
+
+
+
+
+## 2、修改语句
+
+
+
+```mysql
+#1、修改单表的记录
+UPDATE table_name
+SET column1=value1,column2=value2,...
+WHERE some_column=some_value;
+
+#2、修改多表的记录
+UPDATE table_name1 INNER|LEFT|RIGHT JOIN table_name2 ON 连接条件
+SET column1=value1,column2=value2,...
+WHERE some_column=some_value;
+```
+
+
+
+```mysql
+#修改单表记录
+#修改beauty表中姓唐的电话为'13889898989'
+update beauty set phone='13889898989' where name like '唐%';
+
+#修改多表记录
+#修改张无忌的女朋友的手机号为114
+update boys as b1 inner join beauty as b2 on b1.id = b2.boyfriend_id
+set b2.phone = '114'
+where b1.name='张无忌';
+```
+
+
+
+
+
+## 3、删除语句
+
+
+
+```mysql
+#方式一：delete
+#1、单表删除
+DELETE FROM table_name
+WHERE some_column=some_value;
+
+#2、多表删除
+
+#DELETE table_name1,table_name2 	#表示删除table_name1,table_name2的内容
+DELETE table_name1 					#表示删除table_name1的内容
+FROM table_name1 INNER|LEFT|RIGHT JOIN table_name2 ON 连接条件
+SET column1=value1,column2=value2,...
+WHERE some_column=some_value;
+
+
+
+#方式二：truncate
+truncate table table_name;#删除表里的全部行
+```
+
+
+
+两种方式比较：
+
+- `delete `可以加 `where` 条件，`truncate`不能加
+
+- `truncate`删除，效率高
+
+- **假如要删除的表中有自增列，二者删除效果有差别**
+
+	如果用`delete`删除，再插入数据，自增长列的值从断点开始
+
+	如果用`truncate`删除，再插入数据，自增长列的值从1开始
+
+- **删除的表时，二者返回值有差别**
+
+	如果用`delete`删除，有返回值（xxx行受影响）
+
+	如果用`truncate`删除，无返回值（0行受影响）
+
+- **回滚**
+
+	如果用`delete`删除，可以回滚
+
+	如果用`truncate`删除，不能回滚
+
+
+
+```mysql
+#方式一
+
+#单表删除
+#删除手机号以9结尾的女生信息
+delete from beauty where phone like '%9';
+
+#多表删除
+#删除张无忌的女朋友
+#delete b1,b2 #这样的话，boy表里的张无忌也会被删除
+delete b1 
+from beauty as b1 inner join boy as b2 on b1.boyfriend_id=b2.id
+where b2.name='张无忌';
+```
+
+```mysql
+#方式二
+#删除boy表的全部行
+truncate table boys;
+#delete from boys; #delete的删除表
+```
+
+
+
+
+
+
+
+
+
+
+
+# 五、Data Define Language
+
+## 1、库的管理
+
+- 库的创建
+
+	```mysql
+	CREATE DATABASE  [IF NOT EXISTS][库名];
+	```
+
+- 库的修改
+
+	```mysql
+	#更改库的字符集
+	alter database books character set gbk;
+	```
+
+- 库的删除
+
+	```mysql
+	DROP DATABASE [IF EXISTS] [库名]
+	```
+
+	
+
+
+
+
+
+
+
+```mysql
+create database books;
+create database if not exists books;#当库存在时，不会报错
+
+drop database if exists books;#当库不存在时，不会报错
+```
+
+
+
+
+
+
+
+
+
+## 2、表的管理
+
+
+
+
+
 
 
 
@@ -1181,6 +1500,36 @@ select * from employees where last_name like '%%' and bonus_rate like '%%';
 
 #不一样,如果判断的字段中有NULL值
 
+```
+
+
+
+```mysql
+#2、查询语句中涉及到的关键字的执行顺序
+select [查询列表] from [表名] join [表名] on [连接条件]
+where [条件] 
+group by [分组条件]
+having [筛选条件]
+order by [排序列表] [asc|desc]
+limit offset,size
+
+1、from
+2、join
+3、on
+4、where
+5、group by
+6、having
+7、select
+8、order by
+9、limit
+#每一条子句都会生成一个虚拟表格
+```
+
+
+
+```mysql
+#3、truncate和delete的比较
+见删除语句
 ```
 
 
