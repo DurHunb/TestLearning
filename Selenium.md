@@ -139,7 +139,7 @@ element.send_keys('白月黑羽\n')
 wd = webdriver.Chrome(r'd:\webdrivers\chromedriver.exe')
 ```
 
-前面讲过，driver赋值的是 WebDriver 类型的对象，我们可以通过这个对象来操控浏览器，比如 打开网址、选择界面元素等。
+driver赋值的是 WebDriver 类型的对象，我们可以通过这个对象来操控浏览器，比如 打开网址、选择界面元素等。
 
 下面的代码
 
@@ -159,9 +159,9 @@ wd.find_element_by_id('kw')
 
 比如 ：
 
-调用这个对象的 send_keys 方法就可以在对应的元素中 输入字符串，
+调用这个对象的 `send_keys` 方法就可以在对应的元素中 输入字符串，
 
-调用这个对象的 click 方法就可以 **点击** 该元素。
+调用这个对象的 `click` 方法就可以 **点击** 该元素。
 
 
 
@@ -353,44 +353,44 @@ print (element.text)
 
 
 
-## 一、CSS表达式
+## 一、`CSS`表达式
 
 
 
-### CSS Selector 语法选择元素原理
+### `CSS` Selector 语法选择元素原理
 
 HTML中经常要 为 某些元素 指定 **显示效果**，比如 前景文字颜色是红色， 背景颜色是黑色， 字体是微软雅黑等。
 
-那么CSS必须告诉浏览器：要 **选择哪些元素** ， 来使用这样的显示风格。
+那么`CSS`必须告诉浏览器：要 **选择哪些元素** ， 来使用这样的显示风格。
 
 比如 ，[下图中](http://cdn1.python3.vip/files/selenium/sample1.html)，为什么狮子老虎山羊会显示为红色呢？
 
 ![image](http://cdn1.python3.vip/imgs/gh/36257654_62668791-c36b6c00-b9bf-11e9-8196-8df5c8ffd890.png)
 
-因为蓝色框里面用css 样式，指定了class 值为animal的元素，要显示为红色。
+因为蓝色框里面用`CSS` 样式，指定了class 值为animal的元素，要显示为红色。
 
-其中 蓝色框里面的 .animal 就是 CSS Selector ，或者说 CSS 选择器。
+其中 蓝色框里面的 .animal 就是 `CSS` Selector ，或者说 `CSS` 选择器。
 
-CSS Selector 语法就是用来选择元素的。
+`CSS` Selector 语法就是用来选择元素的。
 
-既然 CSS Selector 语法 天生就是浏览器用来选择元素的，selenium自然就可以使用它用在自动化中，去选择要操作的元素了。
+既然 `CSS` Selector 语法 天生就是浏览器用来选择元素的，selenium自然就可以使用它用在自动化中，去选择要操作的元素了。
 
-只要 CSS Selector 的语法是正确的， Selenium 就可以选择到该元素。
+只要 `CSS` Selector 的语法是正确的， Selenium 就可以选择到该元素。
 
-CSS Selector 非常强大，学习Selenium Web自动化一定要学习CSS Selector
+`CSS` Selector 非常强大，学习Selenium Web自动化一定要学习`CSS` Selector
 
 
 
-通过 CSS Selector 选择单个元素的方法是
+通过 `CSS` Selector 选择单个元素的方法是
 
 ```python
-find_element_by_css_selector(CSS Selector参数)
+find_element_by_css_selector(`CSS` Selector参数)
 ```
 
 选择所有元素的方法是
 
 ```python
-find_elements_by_css_selector(CSS Selector参数)
+find_elements_by_css_selector(`CSS` Selector参数)
 ```
 
 
@@ -401,11 +401,11 @@ find_elements_by_css_selector(CSS Selector参数)
 
 
 
-CSS Selector 同样可以根据tag名、id 属性和 class属性 来 选择元素。
+`CSS` Selector 同样可以根据tag名、id 属性和 class属性 来 选择元素。
 
 
 
-根据 tag名 选择元素的 CSS Selector 语法非常简单，直接写上tag名即可，
+根据 tag名 选择元素的 `CSS` Selector 语法非常简单，直接写上tag名即可，
 
 比如 要选择 所有的tag名为div的元素，就可以是这样
 
@@ -433,7 +433,7 @@ elements = wd.find_elements_by_tag_name('div')
 <input  type="text" id='searchtext' />
 ```
 
-就可以使用 `#searchtext` 这样的 CSS Selector 来选择它。
+就可以使用 `#searchtext` 这样的 `CSS` Selector 来选择它。
 
 比如，我们想在 `id 为 searchtext` 的输入框中输入文本 `你好` ，完整的Python代码如下
 
@@ -454,7 +454,7 @@ element.send_keys('你好')
 
 
 
-根据class属性 选择元素的语法是在 class 值 前面加上一个点： `.class值`
+根据`class`属性 选择元素的语法是在 class 值 前面加上一个点： `.class值`
 
 比如 要选择**所有** class 属性值为 animal的元素 动物 除了这样写
 
@@ -480,28 +480,24 @@ elements = wd.find_elements_by_css_selector('.animal')
 
 
 
-[点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=13)
 
+id、class 都是web元素的 ```属性``` ，因为它们是很常用的属性，所以`CSS`选择器专门提供了根据 id、class 选择的语法。
 
-id、class 都是web元素的 ```属性``` ，因为它们是很常用的属性，所以css选择器专门提供了根据 id、class 选择的语法。
-
-那么其他的属性呢？
-
-比如
+同样，可以用`CSS`选择器选择其他属性，比如下面根据`href`选择
 
 ```html
 <a href="http://www.miitbeian.gov.cn">苏ICP备88885574号</a>
 ```
 
-里面根据 href选择，可以用css 选择器吗？
 
-当然可以！
 
-==css 选择器支持通过任何属性来选择元素==，语法是用一个方括号 `[]` 。
+<font color='red'>`CSS`选择器支持通过任何属性来选择元素</font>，语法是用一个方括号 `[]` 。
 
-比如要选择上面的a元素，就可以使用 `[href="http://www.miitbeian.gov.cn"]` 。
+> 比如要选择上面的a元素，就可以使用 `[href="http://www.miitbeian.gov.cn"]` 。
+>
+> 这个表达式的意思是，选择 属性`href`值为 `http://www.miitbeian.gov.cn` 的元素。
 
-这个表达式的意思是，选择 属性href值为 `http://www.miitbeian.gov.cn` 的元素。
+
 
 完整代码如下
 
@@ -521,17 +517,30 @@ print(element.get_attribute('outerHTML'))
 
 
 
-当然，前面可以加上标签名的限制，比如 `div[class='SKnet']` 表示 选择所有 标签名为div，且class属性值为SKnet的元素。
-
-属性值用单引号，双引号都可以。
-
-
-
-根据属性选择，还可以不指定属性值，比如 `[href]` ， 表示选择 所有 具有 属性名 为href 的元素，不管它们的值是什么。
+- 前面可以加上标签名的限制
+  - 比如 `div[class='SKnet']` 表示 选择所有 标签名为div，且class属性值为`SKnet`的元素。
+  - 属性值用单引号，双引号都可以。
 
 
 
-1. CSS 还可以选择 属性值 `包含` 某个字符串 的元素
+- 可以不指定属性值，
+  - 比如 `[href]` ， 表示选择 所有 具有 属性名 为`href `的元素，不管它们的值是什么。
+
+
+
+- 如果一个元素具有多个属性
+
+```html
+<div class="misc" ctype="gun">沙漠之鹰</div>
+```
+
+`CSS` 选择器 可以指定 选择的元素要 同时具有多个属性的限制， `div[class=misc][ctype=gun]`
+
+
+
+#### 选择 某个字符串在 元素属性值 的开头、中间、结尾
+
+1. `CSS` 可以选择 属性值 包含 某个字符串 的元素
 
    比如， 要选择a节点，里面的href属性包含了 miitbeian 字符串，就可以这样写
 
@@ -541,7 +550,7 @@ print(element.get_attribute('outerHTML'))
 
 
 
-2. 还可以 选择 属性值 以某个字符串 `开头` 的元素
+2. `CSS` 可以选择 属性值 以某个字符串 `开头` 的元素
 
    比如， 要选择a节点，里面的href属性以 http 开头 ，就可以这样写
 
@@ -551,7 +560,7 @@ print(element.get_attribute('outerHTML'))
 
 
 
-3. 还可以 选择 属性值 以某个字符串 `结尾` 的元素
+3. `CSS` 可以选择 属性值 以某个字符串 `结尾` 的元素
 
    比如， 要选择a节点，里面的href属性以 gov.cn 结尾 ，就可以这样写
 
@@ -560,14 +569,6 @@ print(element.get_attribute('outerHTML'))
    ```
 
 
-
-如果一个元素具有多个属性
-
-```html
-<div class="misc" ctype="gun">沙漠之鹰</div>
-```
-
-CSS 选择器 可以指定 选择的元素要 同时具有多个属性的限制，像这样 `div[class=misc][ctype=gun]`
 
 
 
@@ -581,7 +582,7 @@ CSS 选择器 可以指定 选择的元素要 同时具有多个属性的限制�
 
 
 
-CSS selector的另一个强大之处在于： 选择语法 可以 `联合使用`
+`CSS` selector的另一个强大之处在于： 选择语法 可以 `联合使用`
 
 [请点击打开这个网址](http://cdn1.python3.vip/files/selenium/sample1.html)
 
@@ -601,13 +602,13 @@ CSS selector的另一个强大之处在于： 选择语法 可以 `联合使用`
 </div>         
 ```
 
-CSS selector 表达式 可以这样写：
+`CSS` selector 表达式 可以这样写：
 
 ```
 div.footer1 > span.copyright
 ```
 
-就是 选择 一个class 属性值为 copyright 的 span 节点， 并且要求其 必须是 class 属性值为 footer1 的 div节点 的子节点
+选择 一个class 属性值为 copyright 的 span 节点， 并且要求其 必须是 class 属性值为 footer1 的 div节点 的子节点
 
 
 
@@ -617,7 +618,7 @@ div.footer1 > span.copyright
 .footer1 > .copyright
 ```
 
-就是 选择 一个class 属性值为copyright 的节点（不限类型）， 并且要求其 必须是 class 属性值为 footer1 的节点的 子节点
+选择 一个class 属性值为copyright 的节点（不限类型）， 并且要求其 必须是 class 属性值为 footer1 的节点的 子节点
 
 
 
@@ -635,7 +636,7 @@ div.footer1 > span.copyright
 
 如果我们要 同时选择所有class 为 plant `和` class 为 animal 的元素。怎么办？
 
-这种情况，css选择器可以 使用 `逗号` ，称之为 组选择 ，像这样
+这种情况，`CSS`选择器可以 使用 `逗号` ，称之为 组选择 ，像这样
 
 ```html
 .plant , .animal
@@ -827,16 +828,16 @@ p:nth-child(odd)
 
 
 
-更多CSS选择器的介绍，可以参考[CSS 选择器参考手册](http://www.w3school.com.cn/cssref/css_selectors.asp)
+更多`CSS`选择器的介绍，可以参考[CSS 选择器参考手册](http://www.w3school.com.cn/cssref/css_selectors.asp)
 
 
 
-### EX-1 验证 CSS Selector语法
+### EX-1 验证 `CSS` Selector语法
 
 [点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=14)
 
 
-那么我们怎么验证 CSS Selector 的语法是否正确选择了我们要选择的元素呢？
+那么我们怎么验证 `CSS` Selector 的语法是否正确选择了我们要选择的元素呢？
 
 当然可以像下面这样，写出Python代码，运行看看，能否操作成功
 
@@ -855,7 +856,7 @@ element.input('输入的文本')
 
 
 
-由于 CSS Selector 是浏览器直接支持的，可以在浏览器 **开发者工具栏** 中验证。
+由于 `CSS` Selector 是浏览器直接支持的，可以在浏览器 **开发者工具栏** 中验证。
 
 比如我们使用Chrome浏览器打开 http://cdn1.python3.vip/files/selenium/sample1.html
 
@@ -879,13 +880,13 @@ element.input('输入的文本')
 
 ![白月黑羽Python3教程](http://cdn1.python3.vip/imgs/gh/36257654_38160687-1fe71db4-34f4-11e8-81e7-b65b5edd5e69.png)
 
-我们可以在里面输入任何 CSS Selector 表达式 ，如果能选择到元素， 右边的的红色方框里面就会显示出类似 `2 of 3` 这样的内容。
+我们可以在里面输入任何 `CSS` Selector 表达式 ，如果能选择到元素， 右边的的红色方框里面就会显示出类似 `2 of 3` 这样的内容。
 
 of 后面的数字表示这样的表达式 `总共选择到几个元素`
 
 of 前面的数字表示当前黄色高亮显示的是 `其中第几个元素`
 
-上图中的 `1 of 1` 就是指 ： CSS 选择语法 `#bottom > .footer2 a`
+上图中的 `1 of 1` 就是指 ： `CSS` 选择语法 `#bottom > .footer2 a`
 
 在当前网页上共选择到 1 个元素， 目前高亮显示的是第1个。
 
@@ -897,7 +898,7 @@ of 前面的数字表示当前黄色高亮显示的是 `其中第几个元素`
 
 
 
-### EX-2 CSS Selector 选择子元素和后代元素
+### EX-2 `CSS` Selector 选择子元素和后代元素
 
 [点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=12)
 
@@ -944,7 +945,7 @@ HTML中， 元素 内部可以 **包含其他元素**， 比如 下面的 HTML�
 
 
 
-1. 如果 `元素2` 是 `元素1` 的 直接子元素， CSS Selector 选择子元素的语法是这样的
+1. 如果 `元素2` 是 `元素1` 的 直接子元素， `CSS` Selector 选择子元素的语法是这样的
 
    > 元素1 > 元素2
 
@@ -962,7 +963,7 @@ HTML中， 元素 内部可以 **包含其他元素**， 比如 下面的 HTML�
 
    
 
-2. 如果 `元素2` 是 `元素1` 的 后代元素， CSS Selector 选择后代元素的语法是这样的
+2. 如果 `元素2` 是 `元素1` 的 后代元素， `CSS` Selector 选择后代元素的语法是这样的
 
    > 元素1   元素2
 
@@ -994,7 +995,7 @@ element = wd.find_element_by_css_selector('#bottom > .footer2  a')
 
 [点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=27)
 
-前面我们学习了CSS 选择元素。
+前面我们学习了`CSS` 选择元素。
 
 大家可以发现非常灵活、强大。
 
@@ -1006,16 +1007,16 @@ XPath (XML Path Language) 是由国际标准化组织W3C指定的，用来在 XM
 
 
 
-既然已经有了CSS，为什么还要学习 Xpath呢？ 因为
+既然已经有了`CSS`，为什么还要学习 Xpath呢？ 因为
 
-- 有些场景 用 css 选择web 元素 很麻烦，而xpath 却比较方便。
+- 有些场景 用 `CSS` 选择web 元素 很麻烦，而xpath 却比较方便。
 - 另外 Xpath 还有其他领域会使用到，比如 爬虫框架 Scrapy， 手机App框架 Appium。
 
 [请点击打开这个网址](http://cdn1.python3.vip/files/selenium/test1.html)
 
 按F12打开调试窗口，点击 Elements标签。
 
-要验证 Xpath 语法是否能成功选择元素，也可以像 验证 CSS 语法那样，按组合键 Ctrl + F ，就会出现 搜索框
+要验证 Xpath 语法是否能成功选择元素，也可以像 验证 `CSS` 语法那样，按组合键 Ctrl + F ，就会出现 搜索框
 
 
 
@@ -1035,7 +1036,7 @@ xpath 语法中，整个HTML文档根节点用’/‘表示，如果我们想选
 
 这个表达式表示选择html下面的body下面的div元素。
 
-注意 `/` 有点像 CSS中的 `>` , 表示直接子节点关系。
+注意 `/` 有点像 `CSS`中的 `>` , 表示直接子节点关系。
 
 
 
@@ -1043,7 +1044,7 @@ xpath 语法中，整个HTML文档根节点用’/‘表示，如果我们想选
 
 从根节点开始的，到某个节点，每层都依次写下来，每层之间用 `/` 分隔的表达式，就是某元素的 `绝对路径`
 
-上面的xpath表达式 `/html/body/div` ，就是一个绝对路径的xpath表达式， 等价于 css表达式 `html>body>div`
+上面的xpath表达式 `/html/body/div` ，就是一个绝对路径的xpath表达式， 等价于 `CSS`表达式 `html>body>div`
 
 
 
@@ -1059,7 +1060,7 @@ elements = driver.find_elements_by_xpath("/html/body/div")
 
 有的时候，我们需要选择网页中某个元素， `不管它在什么位置` 。
 
-比如，选择示例页面的所有标签名为 `div` 的元素，如果使用css表达式，直接写一个 `div` 就行了。
+比如，选择示例页面的所有标签名为 `div` 的元素，如果使用`CSS`表达式，直接写一个 `div` 就行了。
 
 那xpath怎么实现同样的功能呢？ xpath需要前面加 `//` , 表示从当前节点往下寻找所有的后代元素,不管它在什么位置。
 
@@ -1077,7 +1078,7 @@ elements = driver.find_elements_by_xpath("//div//p")
 
 
 
-如果使用CSS选择器，对应代码如下
+如果使用`CSS`选择器，对应代码如下
 
 ```python
 elements = driver.find_elements_by_css_selector("div p")
@@ -1087,7 +1088,7 @@ elements = driver.find_elements_by_css_selector("div p")
 
 如果，要选择 所有的 div 元素里面的 直接子节点 p ， xpath，就应该这样写了 `//div/p`
 
-如果使用CSS选择器，则为 `div > p`
+如果使用`CSS`选择器，则为 `div > p`
 
 
 
@@ -1096,7 +1097,7 @@ elements = driver.find_elements_by_css_selector("div p")
 如果要选择所有div节点的所有直接子节点，可以使用表达式 `//div/*`
 
 ```
-*` 是一个通配符，对应任意节点名的元素，等价于CSS选择器 `div > *
+*` 是一个通配符，对应任意节点名的元素，等价于`CSS`选择器 `div > *
 ```
 
 代码如下：
@@ -1166,9 +1167,9 @@ Xpath 可以根据属性来选择元素。
 
 [点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=29)
 
-xpath类似css表达式，也可以根据次序选择元素。
+xpath类似`CSS`表达式，也可以根据次序选择元素。
 
- 语法比css更简洁，直接在方括号中使用数字表示次序
+ 语法比`CSS`更简洁，直接在方括号中使用数字表示次序
 
 #### 某类型 第几个 子元素
 
@@ -1264,9 +1265,9 @@ xpath还可以选择子元素的次序范围。
 
 ### 4、组选择
 
-css有组选择，可以同时使用多个表达式，多个表达式选择的结果都是要选择的元素
+`CSS`有组选择，可以同时使用多个表达式，多个表达式选择的结果都是要选择的元素
 
-css 组选择，表达式之间用 **逗号** 隔开
+`CSS` 组选择，表达式之间用 **逗号** 隔开
 
 xpath也有组选择， 是用 **竖线** 隔开多个表达式
 
@@ -1276,7 +1277,7 @@ xpath也有组选择， 是用 **竖线** 隔开多个表达式
 //option | //h4
 ```
 
-等同于CSS选择器
+等同于`CSS`选择器
 
 ```python
 option , h4
@@ -1290,7 +1291,7 @@ option , h4
 //*[@class='single_choice'] | //*[@class='multi_choice']
 ```
 
-等同于CSS选择器
+等同于`CSS`选择器
 
 ```python
 .single_choice , .multi_choice
@@ -1300,7 +1301,7 @@ option , h4
 
 ### 5、父节点选择
 
-xpath可以选择父节点， 这是css做不到的。
+xpath可以选择父节点， 这是`CSS`做不到的。
 
 某个元素的父节点用 `/..` 表示
 
@@ -1314,13 +1315,13 @@ xpath可以选择父节点， 这是css做不到的。
 
 ### 6、兄弟节点选择
 
-前面学过 css选择器，要选择某个节点的后续兄弟节点，用 **波浪线**
+前面学过 `CSS`选择器，要选择某个节点的后续兄弟节点，用 **波浪线**
 
 xpath也可以选择 后续 兄弟节点，用这样的语法 `following-sibling::`
 
 比如，要选择 class 为 single_choice 的元素的所有后续兄弟节点 `//*[@class='single_choice']/following-sibling::*`
 
-等同于CSS选择器 `.single_choice ~ *`
+等同于`CSS`选择器 `.single_choice ~ *`
 
 如果，要选择后续节点中的div节点， 就应该这样写 `//*[@class='single_choice']/following-sibling::div`
 
@@ -1330,7 +1331,7 @@ xpath还可以选择 `前面的` 兄弟节点，用这样的语法 `preceding-si
 
 比如，要选择 class 为 single_choice 的元素的所有前面的兄弟节点 `//*[@class='single_choice']/preceding-sibling::*`
 
-而CSS选择器目前还没有方法选择前面的 兄弟节点
+而`CSS`选择器目前还没有方法选择前面的 兄弟节点
 
 
 
@@ -1390,7 +1391,7 @@ elements = china.find_elements_by_xpath('.//p')
 
 [请大家点击这里，打开这个链接](http://cdn1.python3.vip/files/selenium/sample2.html)
 
-如果我们要 选择 下图方框中 所有的 蔬菜，使用css选择，怎么写表达式？
+如果我们要 选择 下图方框中 所有的 蔬菜，使用`CSS`选择，怎么写表达式？
 
 当然，要先查看到它们的html元素特征
 
