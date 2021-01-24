@@ -37,7 +37,7 @@
 	
 	- 只有自己执行完毕或者杀掉这个进程这两种方法结束Monkey
 
-![image-20201229231757155](D:%5Crb%5C%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%5CLearning%5CMonkey.assets%5Cimage-20201229231757155.png)
+![image-20201229231757155](D:%5CGitHub%5CTestLearning%5CMonkey.assets%5Cimage-20201229231757155.png)
 
 - Monkey启动方式
 

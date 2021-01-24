@@ -1207,13 +1207,13 @@ select * from employees where email like '%a%' or department_id > 90;
 
 ```mysql
 #方式一
-INSERT INTO table_name (column1,column2,column3,...)
+INSERT INTO 表名 (column1,column2,column3,...)
 VALUES (value1,value2,value3,...);
 
 #insert into beauty values(...)	#如果表名后不加字段，则默认为全部字段
 
 #方式二
-INSERT INTO table_name
+INSERT INTO 表名
 SET 列名=值,列名=值,列名=值...
 ```
 
@@ -1252,12 +1252,12 @@ SET 列名=值,列名=值,列名=值...
 
 ```mysql
 #1、修改单表的记录
-UPDATE table_name
+UPDATE 表名
 SET column1=value1,column2=value2,...
 WHERE some_column=some_value;
 
 #2、修改多表的记录
-UPDATE table_name1 INNER|LEFT|RIGHT JOIN table_name2 ON 连接条件
+UPDATE 表名1 INNER|LEFT|RIGHT JOIN 表名2 ON 连接条件
 SET column1=value1,column2=value2,...
 WHERE some_column=some_value;
 ```
@@ -1287,21 +1287,21 @@ where b1.name='张无忌';
 ```mysql
 #方式一：delete
 #1、单表删除
-DELETE FROM table_name
+DELETE FROM 表名
 WHERE some_column=some_value;
 
 #2、多表删除
 
 #DELETE table_name1,table_name2 	#表示删除table_name1,table_name2的内容
-DELETE table_name1 					#表示删除table_name1的内容
-FROM table_name1 INNER|LEFT|RIGHT JOIN table_name2 ON 连接条件
+DELETE 表名1 					#表示删除table_name1的内容
+FROM 表名1 INNER|LEFT|RIGHT JOIN 表名2 ON 连接条件
 SET column1=value1,column2=value2,...
 WHERE some_column=some_value;
 
 
 
 #方式二：truncate
-truncate table table_name;#删除表里的全部行
+truncate table 表名;#删除表里的全部行
 ```
 
 
@@ -1371,7 +1371,7 @@ truncate table boys;
 - 库的创建
 
 	```mysql
-	CREATE DATABASE  [IF NOT EXISTS][库名];
+	CREATE DATABASE  [IF NOT EXISTS] 数据库名;
 	```
 
 - 库的修改
@@ -1384,25 +1384,19 @@ truncate table boys;
 - 库的删除
 
 	```mysql
-	DROP DATABASE [IF EXISTS] [库名]
+	DROP DATABASE [IF EXISTS] 数据库名
 	```
 
 	
-
-
-
-
-
-
 
 ```mysql
 create database books;
 create database if not exists books;#当库存在时，不会报错
 
 drop database if exists books;#当库不存在时，不会报错
+
+#[IF EXISTS]仅在库、表的创建和删除有用，表内字段删除时不能用
 ```
-
-
 
 
 
@@ -1414,6 +1408,352 @@ drop database if exists books;#当库不存在时，不会报错
 
 
 
+#### 表的创建
+
+```mysql
+CREATE TABLE [IF NOT EXISTS] 表名(
+	col_name1 col_type [(长度)约束],
+    col_name2 col_type [(长度)约束],
+    col_name3 col_type [(长度)约束],
+    col_name4 col_type [(长度)约束]
+);
+```
+
+
+
+```mysql
+#创建表book
+create table book{
+	id int,#编号
+	bname varchar(20),#图书名
+	price double,#价格
+	authorId int,#作者编号
+	publishDate datetime#出版日期
+};
+#创建表author
+create table author{
+	id int,#编号
+	name varchar(20),#名字
+};
+```
+
+
+
+#### 表的修改
+
+```mysql
+ALTER TABLE 表名 CHANGE|MODIFY|ADD|RENAME TO|DROP COLUMN 列名 [列类型(约束)]
+```
+
+
+
+- 修改列名
+
+```mysql
+#把book表中的publishDate字段，改为pubDate
+alter table book change column publishDate pubDate datetime;
+```
+
+- 修改类的类型或约束
+
+```mysql
+#把book表中的pubDate字段类型，改为timestamp
+alter table book modify column pubDate timestamp;
+```
+
+- 添加新列
+
+```mysql
+#在author表添加新列 annual #年薪
+alter table author add column annual double;
+```
+
+- 删除列
+
+```mysql
+#删除author表的 列 annual 
+alter table author drop column annual;
+```
+
+- 修改表名
+
+```mysql
+#修改author表的表名为book_author
+alter table author rename to book_author;
+```
+
+
+
+#### 表的删除
+
+```mysql
+DROP TABLE [IF EXISTS] 表名;
+```
+
+
+
+#### 表的复制
+
+- 仅仅复制表的结构
+
+```mysql
+create table copy1 like book;
+```
+
+- 复制表的结构+数据
+
+```mysql
+create table copy2
+select * from book;
+```
+
+- 只复制部分数据
+
+```mysql
+create table copy3
+select id,bname  from book where price < 100;
+```
+
+- 仅仅复制部分结构
+
+```mysql
+create table copy4
+select id,bname  from book where 1=2;		#设置成没有满足条件的数据，就不会有数据复制过去
+```
+
+
+
+
+
+## 3、数据类型
+
+
+
+#### 整型
+
+`tinyint`，`smallint`，`mediumint`，`int/integer`，`bigint`
+
+  1字节	，   2字节	 ，    3字节	  ，		4字节	  ，  8字节
+
+特点：
+
+- 默认是有符号，如果想设置无符号，需要添加`unsigned`关键字
+
+- 如果插入的数字超处了整型的范围，会报异常，并且插入的是临界值
+
+- 如果不设置长度，会有默认的长度。长度仅代表显示的数字位数，与大小范围无关
+
+	与`zerofill`搭配使用，加了`zerofill`后，默认会变为无符号
+
+```mysql
+#如何设置有符号和无符号
+create tab_int(
+	t1 int,				#有符号
+    t2 int unsigned,	#无符号
+    
+    #加了zerofill后，默认会变为无符号。当数字不满足6位时，会从左边以0填充位数。满足则不填充
+    t3 int(6) zerofill  
+)
+```
+
+
+
+#### 小数
+
+- 浮点型
+
+	`float(M,D)`，`double(M,D)`
+
+	​	4字节        ，       8字节
+
+- 定点型
+
+	`DEC(M,D)`/`DECIMAL(M,D)`
+
+	最大取值范围与double相同，但是<font color='red'>精确度更高</font>，涉及货币运算等用decimal
+
+	
+
+	特点：
+	
+- M：整数部位+小数部位的长度
+
+  D：小数部位的长度
+
+- M、D可以省略
+
+  如果是decimal，则M默认为10，D默认为0
+
+  如果是float/double，无限制（只要在相应的取值范围内）
+
+```mysql
+create tab_float(
+	t1 float(5,2),				
+    t2 float(5,2),	
+    t3 decimal(5,2)
+)
+```
+
+​	
+
+#### 字符型
+
+保存较短的文本：
+
+​	`char`，`varchar`
+
+​	`binary`，`varbinary`用于保存较短的二进制
+
+​	`enum`用于保存枚举——enum(‘a’,’b’,’c’)
+
+​	`set`用于保存集合——set(‘a’,’b’,’c’)
+
+保存较长的文本：
+
+​	`text`，`blob`
+
+|         | 写法       | M的意思    | 特点       | 空间的耗费 | 效率 |
+| ------- | ---------- | ---------- | ---------- | ---------- | ---- |
+| char    | char(M)    | 最大字符数 | 固定的长度 | 比较耗费   | 高   |
+| varchar | varchar(M) | 最大字符数 | 可变的长度 | 比较节省   | 低   |
+
+
+
+#### 日期类型
+
+`date`：只保存日期
+
+`time`：只保存时间
+
+`year`：只保存年
+
+`datetime`：保存日期+时间，不受时区影响
+
+- 8个字节
+- 1000—9999
+
+`timestamp`：保存日期+时间，受时区影响
+
+- 4个字节
+- 1970—2038
+
+
+
+
+
+## 4、常见约束
+
+
+
+```mysql
+#查看表中所有的索引，包括主键、外键、唯一，以及自己建的索引
+show index from 表名
+```
+
+六大约束
+
+- **NOT NULL** 非空
+- **PRIMARY KEY** 主键
+- **UNIQUE** 唯一
+- **CHECK** 检查约束,MySQL 不支持,语法不报错但无效果
+- **FOREIGN KEY** 外键.限制两表关系,通常在从表引入外键约束,引入主表中某列的值,保证从表该字段的值必须来源于主表关联列的值
+- **DEFAULT** 默认值/系统设定值
+
+
+
+> **六大约束都可在列级约束使用,但外键无效果(外键是约束两个表之间的关系)**
+>
+> **显而易见,非空和默认不可在表级约束中使用**
+>
+> 一般外键采用表级约束，其余采用列级约束
+
+
+
+```mysql
+#1、添加列级约束
+create table stuinfo(
+	id int primary key,									#主键
+    stuname varchar(20) not null,						#非空
+    gender char(1) check(gender='男' or gender='女'),	   #检查
+    seat int unique,									#唯一
+    age int default 18,									#默认约束
+    majorid int foreign key references major(id)		#外键，不报错，但没效果
+);
+create table major(
+    id int primary key,
+    majorname varchar(20)
+);
+```
+
+
+
+```mysql
+#2、添加表级约束
+#非空和默认不支持表级约束
+create table stuinfo(
+	id int ,
+    stuname varchar(20) not null,#非空
+    gender char(1) ,
+    seat int ,
+    age int default 18,#默认约束
+    majorid int,
+    
+    constraint name1 primary key(id，stuname),#可组合				         #主键
+    constraint name2 unique(seat，age),	#可组合							 #唯一
+    constraint name3 check(gender='男' or gender='女'),			#检查
+    constraint fk_stuinfo_major foreign key(majorid) references major(id)	 #外键，表级约束成功添加
+);
+create table major(
+    id int primary key,
+    majorname varchar(20)
+);
+```
+
+
+
+- 修改表时添加约束
+
+```mysql
+#添加非空约束
+alter table stuinfo modify column stuname varchar(20) not null;
+#添加默认约束
+alter table stuinfo modify column age int default 18;
+
+#添加主键
+#①列级约束添加
+alter table stuinfo modify column id int primary key;
+#②表级约束添加(可加名字)
+alter table stuinfo add [constraint name] primary key(id);
+
+#添加唯一
+#①列级约束添加
+alter table stuinfo modify column seat int unique;
+#②表级约束添加(可加名字)
+alter table stuinfo add [constraint name] unique(seat);
+
+#添加外键(可加名字)
+alter table stuinfo add [constraint fk_stuinfo_major] foreign key(majorid) references major(id);
+```
+
+
+
+- 修改表时删除约束
+
+```mysql
+#删除非空约束
+alter table stuinfo modify column stuname varchar(20)  null;
+#删除默认约束
+alter table stuinfo modify column age int ;
+
+#删除主键
+alter table stuinfo drop primary key;
+
+#删除唯一
+alter table stuinfo drop index name;#name是唯一索引的名字
+
+#删除外键
+alter table stuinfo drop foreign key name;#name是外键的名字
+```
 
 
 
@@ -1421,6 +1761,57 @@ drop database if exists books;#当库不存在时，不会报错
 
 
 
+
+
+## 5、标识列
+
+> 又称为自增列
+
+
+
+```mysql
+#查看auto_increment的参数
+show variables like '%auto_increment%';
+#设置步长=3	(可以通过手动在表中插入值，设置起始值)
+set auto_increment_increment = 3
+```
+
+
+
+特点：
+
+- 标识列不一定必须和主键搭配
+- 一个表最多至多有一个标识列
+- 标识列的类型只能是数值型
+
+
+
+- 创建表时设置标识列
+
+```mysql
+create table if exists tab_identity(
+	id int unique auto_increment,
+    name varchar(20)
+);
+```
+
+- 修改表时设置标识列
+
+```mysql
+alter table tab_identity modify column id int primary key auto_increment;
+```
+
+
+
+
+
+
+
+
+
+# 六、Transaction Control Language 
+
+事务控制语言
 
 
 
@@ -1531,6 +1922,17 @@ limit offset,size
 #3、truncate和delete的比较
 见删除语句
 ```
+
+
+
+4、主键和唯一的对比
+
+|             | 数值唯一性 | 值是否可为空 | 一个表中可以有几个 | 是否可以组合 |
+| ----------- | ---------- | ------------ | ------------------ | ------------ |
+| primary key | √          | ×            | 至多一个           | 可以         |
+| unique      | √          | √            | 可以有多个         | 可以         |
+
+
 
 
 
