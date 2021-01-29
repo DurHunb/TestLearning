@@ -1930,13 +1930,71 @@ rollback;#回滚事务
 
 
 
+### 四种隔离界别
+
+> 查看表的隔离级别
+>
+> ```mysql
+> #查看隔离级别
+> select @@tx_isolation;
+> 
+> #设置read uncommitted级别：
+> set session transaction isolation level read uncommitted;
+> ```
 
 
 
+- Read Uncommitted——读未提交
+
+	- 允许事务读取未被其他事务提交的变更
+
+	- 脏读、不可重复读、幻读都会出现
+
+	
+
+- Read Committed——读已提交
+
+	- 只允许事务读取已被其他事务提交的变更。
+	- 可以避免脏读
+	- 不可重复读、幻读都会出现
 
 
 
+- Repeatable Read——可重复读
 
+	- 确保事务可以多次从一个字段中读取相同的值。
+
+		在这个事务的持续期间内，禁止其他事务对这个字段进行<font color='red'>更新</font>
+
+	- 可以避免脏读、不可重复读
+
+	- 幻读会出现
+
+
+
+- serializable——串行化
+
+	- 确保事务可以从一个表中读取相同的行。
+
+		在这个事务的持续期间，禁止其他事务对该表执行插入、更新、删除操作
+
+	- 所有并发问题都可以避免，但性能极其低下
+
+
+
+### 回滚点
+
+- `savepoint`的使用
+
+```mysql
+set  autocommit = 0;
+start transaction;
+delete from account where id=25;
+savepoint a;#设置保存点
+delete from account where id = 35;      
+rollback to a;#回滚到保存点a
+#	id=35的没删，id=25的删除
+```
 
 
 
