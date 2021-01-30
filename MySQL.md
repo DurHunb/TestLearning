@@ -33,8 +33,8 @@
 #### 表相关sql
 
 ```mysql
-#显示表结构departments的结构
-desc departments
+#显示表departments的结构
+desc departments;
 ```
 
 
@@ -1174,7 +1174,7 @@ union
 
 - 要求多条查询语句的查询列数是一致的
 - 要求多条查询语句的查询结果的每一列意义相同，方便看
-- `unioin`默认去重，如果不去重，可以用 `union all`，查询结果包含重复项
+- `unioin`默认去重，如果不想去重，可以用 `union all`，查询结果包含重复项
 
 ```mysql
 #查询部门编号>90 或 邮箱包含a 的员工信息
@@ -1675,9 +1675,13 @@ create table stuinfo(
 	id int primary key,									#主键
     stuname varchar(20) not null,						#非空
     gender char(1) check(gender='男' or gender='女'),	   #检查
-    seat int unique,									#唯一
+    seat int unique,									#唯一	
     age int default 18,									#默认约束
     majorid int foreign key references major(id)		#外键，不报错，但没效果
+    /*
+    class varchar(30) not null unique,#多条约束添加没有顺序要求
+    */
+    
 );
 create table major(
     id int primary key,
@@ -1809,13 +1813,11 @@ alter table tab_identity modify column id int primary key auto_increment;
 
 
 
-# 六、Transaction Control Language 
+# 六、Transaction Control Language
 
 事务控制语言
 
 
-
-## 1、事务
 
 > 事务：由单独单元的一个或多个SQL语句组成，在这个单元中，每个SQL语句都是相互依赖的。
 >
@@ -1876,7 +1878,7 @@ show engines;
 
 
 
-### 事物的创建
+### 事务的创建
 
 **隐式事务**：比如`insert`、`update`、`delete`等语句，自动提交
 
@@ -1930,7 +1932,7 @@ rollback;#回滚事务
 
 
 
-### 四种隔离界别
+#### 四种隔离级别
 
 > 查看表的隔离级别
 >
@@ -1950,15 +1952,11 @@ rollback;#回滚事务
 
 	- 脏读、不可重复读、幻读都会出现
 
-	
-
 - Read Committed——读已提交
 
 	- 只允许事务读取已被其他事务提交的变更。
 	- 可以避免脏读
 	- 不可重复读、幻读都会出现
-
-
 
 - Repeatable Read——可重复读
 
@@ -1969,8 +1967,6 @@ rollback;#回滚事务
 	- 可以避免脏读、不可重复读
 
 	- 幻读会出现
-
-
 
 - serializable——串行化
 
@@ -1995,6 +1991,87 @@ delete from account where id = 35;
 rollback to a;#回滚到保存点a
 #	id=35的没删，id=25的删除
 ```
+
+
+
+
+
+# 七、视图
+
+> 视图中的字段就是来自一个或多个数据库中的真实的表中的字段。
+>
+> 创建视图时，可以使用 SQL 函数、WHERE 以及 JOIN 语句等
+
+
+
+**注意：**
+
+>  视图总是显示最近的数据。每当用户查询视图时，数据库引擎通过使用 SQL 语句来重建数据。
+
+> 视图可以使用insert、update等，但有很严重的限制
+>
+> 并且因为会作用到原表，所以一般不允许更新视图
+
+- 创建视图
+
+  ```mysql
+  create view myv1
+  as
+  select last_name,first_name from employees
+  ```
+
+- 使用视图
+
+  ```mysql
+  select * from myv1 where last_name like '%a%';
+  ```
+
+  - 视图还可以和表做`join`操作
+
+- 修改视图
+
+  - 方式一
+
+  ```mysql
+  create or replace view 视图名
+  as	查询语句
+  ```
+
+  ```mysql
+  create or replace view myv1
+  as
+  select id，age,sex from employees
+  ```
+
+  - 方式二
+
+  ```mysql
+  alter view 视图名
+  as 查询语句
+  ```
+
+  ```mysql
+  alter view myv1
+  as
+  select id，age,sex from employees
+  ```
+
+- 删除视图
+
+  ```mysql
+  drop view 视图名1,视图名2,视图名3
+  ```
+
+- 查看视图(查看视图结构)
+
+  ```mysql
+  #方式一
+  desc 视图名;
+  #方式二
+  show create view 视图名;
+  ```
+
+  
 
 
 
@@ -2119,7 +2196,23 @@ limit offset,size
 
 ```mysql
 #3、truncate和delete的比较
-见删除语句
+（1）表的部分区别，见删除语句部分
+
+（2）`delete`和`truncate`在事务使用时的区别
+#演示delete
+set autocommit = 0;
+start transaction;
+delete from account;
+rollback;
+
+#演示truncate
+set autocommit = 0;
+start transaction;
+truncate table account;
+rollback;
+
+#delete 支持回滚
+#truncate 已经提交了磁盘文件，不支持回滚
 ```
 
 
