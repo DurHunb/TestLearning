@@ -2498,6 +2498,85 @@ end $
 
 ## 循环结构
 
+> 分类：while、loop、repeat
+>
+> 循环控制：
+>
+> - iterate：相当于continue
+> - leave：相当于break 
+
+
+
+**while**
+
+```mysql
+[标签] while 循环条件 do 
+
+　　循环体;
+
+end while[标签];
+```
+
+
+
+```mysql
+#批量插入多条数据
+delimiter $;
+CREATE PROCEDURE PRO_whiel1( IN count  INT)
+BEGIN 
+
+	DECLARE  i  INT  DEFAULT 1;
+
+　　 label1:WHILE i<=count  DO
+　　　　　　INSERT  INTO  admin(username,`password`)  VALUES(concat('Rose',i), '123456');
+　　　　　　
+　　　　　　if i>=20 then leave label1;#起名的用处
+　　　　　　end if;
+		  SET  i=i+1;
+　　 END WHILE;
+
+END $
+
+#调用
+CALL PRO_whiel1(100) $
+```
+
+
+
+**loop**
+
+> 结束语句要写在循环体内
+
+```mysql
+[标签] loop
+
+　　循环体;
+
+end loop[标签]
+```
+
+
+
+**repeat**
+
+```mysql
+[标签]repeat
+
+　　　循环体;
+　　　
+until 结束循环的条件
+
+end repeat [标签];
+```
+
+
+
+![image-20210203015649072](D:%5CGitHub%5CTestLearning%5CMySQL.assets%5Cimage-20210203015649072.png)
+
+
+
+
+
 
 
 
