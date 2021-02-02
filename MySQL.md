@@ -622,61 +622,6 @@ select user();
 
 
 
-#### 流程控制函数
-
-- `if`函数
-
-```mysql
-#1、if函数
-select if(10<5,'大','小');
-select last_name,bonus_rate,if(bonus_rate is null,'没奖金','有奖金') as 备注
-from employees
-
-```
-
-- case结构（注意两种使用方式的区别，以及结构区别）
-
-```mysql
-
-#使用一：switch case 的效果
-
-/*案例：查询员工工资，要求
-部门号=30，显示的工资为1.1倍
-部门号=40，显示的工资为1.2倍
-部门号=50，显示的工资为1.3倍
-其他部门，显示的工资为原工资
-*/
-#case相当于一个表达式
-select salary as 原始工资,department_id,
-case department			#区别：该行加了【字段/表达式】
-when 30 then salary*1.1
-when 40 then salary*1.2
-when 50 then salary*1.3
-else salary
-end 
-as 新工资
-from employees;	
-
-
-#使用二：类似多重if
-
-/*案例：查询员工工资，要求
-如果工资>20000，显示A级别
-如果工资>15000，显示B级别
-如果工资>10000，显示C级别
-否则显示D级别
-*/
-select salary,
-case					#区别：该行没加【字段/表达式】
-when salary>20000 then 'A'
-when salary>15000 then 'B'
-when salary>10000 then 'C'
-else 'D'
-end
-as 工资级别
-from employees;	
-```
-
 
 
 
@@ -1574,8 +1519,8 @@ create tab_int(
 
 	
 
-	特点：
-	
+**特点**：
+
 - M：整数部位+小数部位的长度
 
   D：小数部位的长度
@@ -2142,7 +2087,7 @@ select @@session.系统变量名
 	select @用户变量名:=值;
 	#方式四：
 	select 字段 into 变量名 from 表;
-	select count(*) into @count from employees;
+	例：select count(*) into @count from employees;
 	
 #3、查看
 	select @count;
@@ -2169,7 +2114,7 @@ select @@session.系统变量名
 	select @局部变量名:=值;
 	#方式四：
 	select 字段 into 局部变量名 from 表;
-	select count(*) into @count from employees;
+	例：select count(*) into @count from employees;
 	
 #3、查看
 	select @count;
@@ -2188,13 +2133,14 @@ select @@session.系统变量名
 
 
 
-### 创建语法
+**创建语法**
 
 ```mysql
+delimiter 重新设定的结束符;
 create procedure 存储过程名(参数模式 参数名 参数类型)
 begin
 		存储过程体(一组有效的SQL语句)
-end
+end 重新设定的结束符
 ```
 
 **注意：**
@@ -2204,17 +2150,40 @@ end
   - out：该参数可以作为返回值
   - inout：该参数既可以作为传入值，也可以作为返回值
 
-- 存储过程体中的每条SQL语句的结尾，必须加分号；
-- 存储过程体结尾，需要用`delimiter`重新设定结束
+- 存储过程体中的每条SQL语句的结尾，必须加分号
+
+- 存储过程体结尾，需要用`delimiter`重新设定结束符（本次会话有效）
+
+  默认情况下，delimiter是分号
 
 
 
-### 调用语法
+**调用语法**
 
 ```mysql
-call 存储过程名(参数列表);
+call 存储过程名(参数列表)  
 ```
 
+**删除语法**
+
+```mysql
+drop procedure 存储过程名;
+#drop procedure 存储过程名1,存储过程名2; #报错，不支持
+```
+
+**查看语法**
+
+```mysql
+#desc myp1; #会提示不存在，这是因为desc只能查看表
+show create procedure myp1;
+```
+
+
+
+
+
+
+**例子**
 
 1、空参列表
 
@@ -2234,15 +2203,71 @@ call myp1()$
 2、带in模式参数
 
 ```mysql
-#创建
+#创建存储过程实现，用户是否登陆成功
 delimiter $;
-create procedure myp2(in clsname varchar(20))
+create procedure myp2(in username varchar(20),in password varchar(20))
+
 begin
-	select * from student as stu where stu.classname=clsname;
+
+	#声明result
+	declare result varchar(20) default '' ; 
+	
+	#把count(*)赋值给result
+	select count(*) into result 
+	from admin 
+	where admin.username=username and admin.password=password;
+	
+	#使用result,相当于打印结果
+	select if(result>0,'成功','失败') 
+	
 end $
 
 #调用
-call myp2()$
+call myp2('居依娜'，'123456')$
+```
+
+3、带out模式参数
+
+> 不用加return语句，out参数赋值后，会自动返回
+
+```mysql
+#创建存储过程实现，统计重名的个数
+delimiter $;
+create procedure myp3(in username varchar(20),out num int)
+
+begin	
+	
+	select count(*) into num
+	from admin 
+	where admin.username=username;
+		
+end $
+
+#调用
+set @num $ 
+call myp3('居依娜',@num)$			#也可以不定义@num，直接call myp3('居依娜',@num)$
+select @num $
+```
+
+4、带inout模式参数
+
+```mysql
+#传入a,b的值，并返回a,b翻倍的值a
+delimiter $;
+create procedure myp4(inout a int,inout b int)
+
+begin	
+	
+	set a=a*2;
+	set b=b*2;
+    
+end $
+
+#调用
+set @m = 10 $ 
+set @n = 20 $ 
+call myp4(@m,@n)$	
+select @m,@n $
 ```
 
 
@@ -2250,6 +2275,228 @@ call myp2()$
 
 
 
+
+
+
+
+
+
+
+# 十、函数
+
+> 函数跟存储过程类似，也是一组sql语句。
+
+
+
+区别：
+
+ - 存储过程可以有0个返回，也可以有多个返回。
+
+   比较适合做批量增删改查
+
+ - 函数有且仅有一个返回
+
+   比较适合处理数据后返回一个结果
+
+
+
+**创建语法：**
+
+```mysql
+delimiter 重新设定的结束符;
+create function 函数名(参数名 参数类型) returns 返回类型
+begin
+	函数体(一组有效的SQL语句)
+	return 值;
+end 重新设定的结束符
+```
+
+- 函数体中的每条SQL语句的结尾，必须加分号；
+
+- 函数体结尾，需要用`delimiter`重新设定结束符（本次会话有效）
+
+  默认情况下，delimiter是分号
+
+**调用语法**
+
+```mysql
+select 函数名(参数名)
+```
+
+**查看函数**
+
+```mysql
+show create function myf2;
+```
+
+**删除函数**
+
+```mysql
+drop function myf2;
+```
+
+
+
+
+
+**例子：**
+
+1、无参数有返回
+
+```mysql
+#创建
+delimiter $;
+create function myf1() returns int
+begin 
+	declare c int default 0;
+    select count(*) into c
+    from employees;
+    return c;
+end $
+
+#调用
+select myf1()$
+```
+
+2、有参有返回
+
+```mysql
+#根据员工名返回他的工资
+delimiter $;
+create function myf2(empName varchar(20)) returns double
+begin
+
+	#定义用户变量
+	set @sal=0;
+	
+	select salary into @sal
+	from employees
+	where lastname = empName;
+	return @sal;
+end $
+
+#调用
+select myf2('k_king') $
+
+```
+
+
+
+
+
+# 十一、流程控制
+
+
+
+## 分支函数
+
+- `if`函数
+
+```mysql
+#1、if函数
+select if(10<5,'大','小');
+select last_name,bonus_rate,if(bonus_rate is null,'没奖金','有奖金') as 备注
+from employees
+
+```
+
+- case函数
+
+  > 注意两种使用方式的区别，以及结构区别
+
+```mysql
+
+#使用一：switch case 的效果，一般用于等值判断
+
+/*案例：查询员工工资，要求
+部门号=30，显示的工资为1.1倍
+部门号=40，显示的工资为1.2倍
+部门号=50，显示的工资为1.3倍
+其他部门，显示的工资为原工资
+*/
+#case相当于一个表达式
+select salary as 原始工资,department_id,
+case department			#区别：该行加了【字段/表达式】
+when 30 then salary*1.1	#then 后面只能是值
+when 40 then salary*1.2
+when 50 then salary*1.3
+else salary
+end 
+as 新工资
+from employees;	
+
+
+#使用二：类似多重if,一般用于区间判断
+
+/*案例：查询员工工资，要求
+如果工资>20000，显示A级别
+如果工资>15000，显示B级别
+如果工资>10000，显示C级别
+否则显示D级别
+*/
+select salary,
+case					#区别：该行没加【字段/表达式】
+when salary>20000 then 'A'	#then 后面只能是值
+when salary>15000 then 'B'
+when salary>10000 then 'C'
+else 'D'
+end
+as 工资级别
+from employees;	
+```
+
+
+
+
+
+## 分支结构
+
+> 只能在begin-end中使用
+>
+> 注意使用方法与流程控制函数区分
+
+`if`结构
+
+```mysql
+#案例：根据传入的成绩显示等级
+delimiter $;
+create function test1(score int) returns char
+begin
+
+	if score>=90 and score<=100 then return 'A';
+	elseif score>=80 and score<=100 then return 'B';
+	elseif score>=60 and score<=100 then return 'C';
+	else return D;
+	end if;
+	
+end $
+```
+
+
+
+`case`结构
+
+```mysql
+#案例：根据传入的成绩显示等级
+delimiter $;
+create procedure test2(in score int) 
+begin
+
+	case
+	when score>=90 and score<=100 then select 'A'; #then 后面只能是语句
+	when score>=80 and score<=100 then select 'B';
+	when score>=60 and score<=100 then select 'C';
+	else select D;
+	end case;
+	
+end $
+```
+
+
+
+
+
+## 循环结构
 
 
 
