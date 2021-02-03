@@ -372,7 +372,7 @@ Monkey所执行的随机事件流中包含11大事件。Monkey通过这11大事�
 可通过`--pct-anyevent`参数来配置其事件百分比。
 
 ```java
---pct-touch			//1.触摸事件
+--pct-touch	 5%		//1.触摸事件
 --pct-motion		//2.动作事件（手势）
 --pct-pinchzoom		//3.二指缩放事件
 --pct-trackball 	//4.轨迹事件
