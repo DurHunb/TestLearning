@@ -2,7 +2,15 @@
 
 
 
-## 1、背景
+![image-20210205162023739](D:\ForLife\Learning\TestLearning\Linux.assets\image-20210205162023739.png)
+
+## 1、Linux介绍
+
+Linux是一款操作系统，免费、开源、安全、高效、稳定，处理高并发十分强悍。
+
+可以长时间不用重启
+
+
 
 Linux是一个内核，基于这个开源的内核，很多厂商开发了自己的Linux发行版本
 
