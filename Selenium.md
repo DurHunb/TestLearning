@@ -1724,37 +1724,35 @@ select框 则是一个新的select标签，大家可以对照浏览器网页内�
 
 - select_by_value
 
-根据选项的 `value属性值` ，选择元素。
+  根据选项的 `value属性值` ，选择元素。
 
-比如，下面的HTML，
+  比如，下面的HTML，
 
 ```html
 <option value="foo">Bar</option>
 ```
 
-就可以根据 foo 这个值选择该选项，
+​		就可以根据 foo 这个值选择该选项，
 
 ```py
 s.select_by_value('foo')
 ```
 
-
-
 - select_by_index
 
-根据选项的 `次序` （从0开始），选择元素
+  根据选项的 `次序` （从0开始），选择元素
 
 - select_by_visible_text
 
-根据选项的 `可见文本` ，选择元素。
+  根据选项的 `可见文本` ，选择元素。
 
-比如，下面的HTML，
+  比如，下面的HTML，
 
 ```html
 <option value="foo">Bar</option>
 ```
 
-就可以根据 Bar 这个内容，选择该选项
+​		就可以根据 Bar 这个内容，选择该选项
 
 ```python
 s.select_by_visible_text('Bar')
@@ -1762,19 +1760,19 @@ s.select_by_visible_text('Bar')
 
 - deselect_by_value
 
-根据选项的value属性值， `去除` 选中元素
+  根据选项的value属性值， `去除` 选中元素
 
 - deselect_by_index
 
-根据选项的次序，`去除` 选中元素
+  根据选项的次序，`去除` 选中元素
 
 - deselect_by_visible_text
 
-根据选项的可见文本，`去除` 选中元素
+  根据选项的可见文本，`去除` 选中元素
 
 - deselect_all
 
-`去除` 选中所有元素
+  `去除` 选中所有元素
 
 
 
@@ -1825,6 +1823,8 @@ select.deselect_all()
 select.select_by_visible_text("小雷老师")
 select.select_by_visible_text("小凯老师")
 ```
+
+
 
 # 操控元素的基本方法
 
@@ -2211,7 +2211,7 @@ alert.dismiss()
 
 下面是一些其他的 Selenium 自动化技巧
 
-### （1）窗口大小
+### （1）窗口大小操作
 
 有时间我们需要获取窗口的属性和相应的信息，并对窗口进行控制
 
@@ -2388,7 +2388,7 @@ Electron程序都是基于基于Chromium技术开发的，所以基本也可以�
 
 如下所示
 
-```py
+```python
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
