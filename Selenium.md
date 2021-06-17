@@ -6,8 +6,6 @@ Selenium 是一个 Web 应用的自动化框架。
 
 - 比如点击界面按钮，在文本框中输入文字 等操作。
 
-而且能从web界面获取信息。 
-
 - 比如获取12306票务信息，招聘网站职位信息，财经网站股票价格信息 等等，然后用程序进行分析处理。
 
 ---
@@ -21,7 +19,6 @@ Selenium 是一个 Web 应用的自动化框架。
 这个自动化程序发送给浏览器驱动的请求 是HTTP请求。
 
 ---
-
 
 **浏览器驱动** 也是一个独立的程序，是由浏览器厂商提供的， 不同的浏览器需要不同的浏览器驱动。 比如 Chrome浏览器和 火狐浏览器有 各自不同的驱动程序。
 
@@ -139,15 +136,13 @@ element.send_keys('白月黑羽\n')
 wd = webdriver.Chrome(r'd:\webdrivers\chromedriver.exe')
 ```
 
-driver赋值的是 WebDriver 类型的对象，我们可以通过这个对象来操控浏览器，比如 打开网址、选择界面元素等。
-
-下面的代码
-
-```py
-wd.find_element_by_id('kw')
-```
+driver赋值的是 WebDriver 类型的对象，我们可以通过这个对象来操控浏览器。
 
 使用了 WebDriver 对象 的方法 find_element_by_id，
+
+```python
+wd.find_element_by_id('kw')
+```
 
 这行代码运行是，就会发起一个请求通过 浏览器驱动 转发给浏览器，告诉它，需要选择一个id为 kw 的元素。
 
@@ -181,7 +176,7 @@ wd.find_element_by_id('kw')
 
 不仅 WebDriver对象有 选择元素 的方法， WebElement对象 也有选择元素的方法。
 
-WebElement对象 也可以调用 `find_elements_by_xxx`， `find_element_by_xxx` 之类的方法
+
 
 WebDriver 对象 选择元素的范围是 **整个 web页面**， 而
 
@@ -252,7 +247,7 @@ element = wd.find_element_by_id('1')
 print (element.text)
 ```
 
-如果大家去运行一下，就会发现有如下异常抛出
+运行后会发现有如下异常抛出
 
 ```python
 selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"id","selector":"1"}
@@ -260,9 +255,9 @@ selenium.common.exceptions.NoSuchElementException: Message: no such element: Una
 
 `NoSuchElementException` 的意思就是在当前的网页上 找不到该元素， 就是找不到 id 为 1 的元素。
 
-为什么呢？
 
-因为我们的代码执行的速度比 百度服务器响应的速度 快。
+
+这是因为代码执行的速度比 百度服务器响应的速度 快。
 
 百度还没有来得及 返回搜索结果，我们就执行了如下代码
 
@@ -272,9 +267,9 @@ element = wd.find_element_by_id('1')
 
 在那短暂的瞬间， 网页上是没有用 id为1的元素的 （因为还没有搜索结果呢）。自然就会报告错误 id为1 的元素不存在了。
 
-那么怎么解决这个问题呢？
+解决方法：
 
-—— 点击搜索后， 用sleep 来 等待几秒钟， 等百度服务器返回结果后，再去选择 id 为1 的元素， 就像下面这样
+- 点击搜索后， 用sleep 来 等待几秒钟， 等百度服务器返回结果后，再去选择 id 为1 的元素， 就像下面这样
 
 ```python
 from selenium import webdriver
@@ -353,31 +348,83 @@ print (element.text)
 
 
 
-## 一、`CSS`表达式
 
 
 
-### `CSS` Selector 语法选择元素原理
 
-HTML中经常要 为 某些元素 指定 **显示效果**，比如 前景文字颜色是红色， 背景颜色是黑色， 字体是微软雅黑等。
+## 一、BY方式定位
 
-那么`CSS`必须告诉浏览器：要 **选择哪些元素** ， 来使用这样的显示风格。
 
-比如 ，[下图中](http://cdn1.python3.vip/files/selenium/sample1.html)，为什么狮子老虎山羊会显示为红色呢？
 
-![image](http://cdn1.python3.vip/imgs/gh/36257654_62668791-c36b6c00-b9bf-11e9-8196-8df5c8ffd890.png)
+使用selenium的By方式定位，首先得导入该模块
 
-因为蓝色框里面用`CSS` 样式，指定了class 值为animal的元素，要显示为红色。
+```python
+from selenium.webdriver.common.by import By
+```
 
-其中 蓝色框里面的 .animal 就是 `CSS` Selector ，或者说 `CSS` 选择器。
 
-`CSS` Selector 语法就是用来选择元素的。
 
-既然 `CSS` Selector 语法 天生就是浏览器用来选择元素的，selenium自然就可以使用它用在自动化中，去选择要操作的元素了。
+**id属性定位**
 
-只要 `CSS` Selector 的语法是正确的， Selenium 就可以选择到该元素。
+```python
+driver.find_element(By.ID,"id")
+```
 
-`CSS` Selector 非常强大，学习Selenium Web自动化一定要学习`CSS` Selector
+**name属性定位**
+
+```python
+driver.find_element(By.NAME,"name")
+```
+
+**classname属性定位**
+
+```python
+driver.find_element(By.CLASS_NAME,"claname")
+```
+
+**a标签文本属性定位**
+
+只能使用精准的匹配（a标签的全部文本内容）
+
+```python
+driver.find_element(By.LINK_TEXT,"text")
+```
+
+**a标签部分文本属性定位**
+
+可以使用精准或模糊匹配，如果使用模糊匹配最好能使用可以唯一关键字；
+
+```python
+driver.find_element(By.PARTIAL_LINK_TEXT,"partailtext")
+```
+
+**标签名定位**
+
+```python 
+driver.find_elemnt(By.TAG_NAME,"input")
+```
+
+**xpath路径定位**
+
+```python
+driver.find_element(By.XPATH,"//div[@name='name']")
+```
+
+**css选择器定位**
+
+```python
+driver.find_element(By.CSS_SELECTOR,"#id")	
+```
+
+
+
+
+
+
+
+
+
+## 二、`CSS`表达式
 
 
 
@@ -401,8 +448,6 @@ find_elements_by_css_selector(`CSS` Selector参数)
 
 
 
-`CSS` Selector 同样可以根据tag名、id 属性和 class属性 来 选择元素。
-
 
 
 根据 tag名 选择元素的 `CSS` Selector 语法非常简单，直接写上tag名即可，
@@ -410,13 +455,7 @@ find_elements_by_css_selector(`CSS` Selector参数)
 比如 要选择 所有的tag名为div的元素，就可以是这样
 
 ```python
-elements = wd.find_elements_by_css_selector('div')
-```
-
-等价于
-
-```python
-elements = wd.find_elements_by_tag_name('div')
+elements = wd.find_element(By.CSS_SELECTOR,'div')
 ```
 
 
@@ -433,7 +472,7 @@ elements = wd.find_elements_by_tag_name('div')
 <input  type="text" id='searchtext' />
 ```
 
-就可以使用 `#searchtext` 这样的 `CSS` Selector 来选择它。
+就可以使用 `#searchtext` 来选择它。
 
 比如，我们想在 `id 为 searchtext` 的输入框中输入文本 `你好` ，完整的Python代码如下
 
@@ -444,7 +483,7 @@ wd = webdriver.Chrome(r'd:\webdrivers\chromedriver.exe')
 
 wd.get('http://cdn1.python3.vip/files/selenium/sample1.html')
 
-element = wd.find_element_by_css_selector('#searchtext')
+element = wd.find_element(By.CSS_SELECTOR,"#searchtext")	
 element.send_keys('你好')
 ```
 
@@ -456,13 +495,7 @@ element.send_keys('你好')
 
 根据`class`属性 选择元素的语法是在 class 值 前面加上一个点： `.class值`
 
-比如 要选择**所有** class 属性值为 animal的元素 动物 除了这样写
-
-```python
-elements = wd.find_elements_by_class_name('animal')
-```
-
-还可以这样写
+比如 要选择**所有** class 属性值为 animal的元素
 
 ```python
 elements = wd.find_elements_by_css_selector('.animal')
@@ -638,13 +671,13 @@ div.footer1 > span.copyright
 
 这种情况，`CSS`选择器可以 使用 `逗号` ，称之为 组选择 ，像这样
 
-```html
+```css
 .plant , .animal
 ```
 
 
 
-再比如，我们要同时选择所有tag名为div的元素 `和` id为BYHY的元素，就可以像这样写
+例1：同时选择所有tag名为div的元素 `和` id为BYHY的元素，可以像这样写
 
 ```html
 div,#BYHY
@@ -652,7 +685,7 @@ div,#BYHY
 
 对应的selenium代码如下
 
-```py
+```python
 elements = wd.find_elements_by_css_selector('div,#BYHY')
 for element in elements:
     print(element.text)
@@ -660,11 +693,7 @@ for element in elements:
 
 
 
-我们再看一个例子
-
-打开这个网址 [请点击打开这个网址](http://cdn1.python3.vip/files/selenium/sample1a.html)
-
-我们要选择所有 唐诗里面的作者和诗名， 也就是选择所有 id 为 t1 里面的 `span 和 p 元素`
+例2：选择所有 id 为 t1 里面的 `span`和 `p 元素`
 
 我们是不是应该这样写呢？
 
@@ -672,7 +701,7 @@ for element in elements:
 #t1 > span,p
 ```
 
-不行哦，这样写的意思是 选择所有 `id 为 t1 里面的 span` 和 `所有的 p 元素`
+不行，这样写的意思是 选择所有 `id 为 t1 里面的 span` 和 `所有的 p 元素`
 
 只能这样写
 
@@ -680,13 +709,11 @@ for element in elements:
 #t1 > span , #t1 > p
 ```
 
+
+
 ### 5、按次序选择子节点
 
 
-
-[点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=17)
-
-[请点击打开这个网址](http://cdn1.python3.vip/files/selenium/sample1b.html)
 
 对应的html如下，关键信息如下
 
@@ -718,59 +745,72 @@ for element in elements:
 
 #### 父元素的第n个子节点
 
-我们可以指定选择的元素 `是父元素的第几个子节点`
+我们可以指定选择的元素 `是父元素的第几个子节点`，使用 `nth-child`。
 
-使用 `nth-child`
+比如，要选择唐诗和宋词的第一个作者，即选择的是 第2个子元素，并且是span类型。
 
-比如，
-
-我们要选择 唐诗 和宋词 的第一个 作者，
-
-也就是说 选择的是 第2个子元素，并且是span类型
-
-所以这样可以这样写 `span:nth-child(2)` ，
+```css
+span:nth-child(2)`
+```
 
 
 
-如果你不加节点类型限制，直接这样写 `:nth-child(2)`
+如果不加节点类型限制，直接这样写
+
+ ```css
+ :nth-child(2)
+ ```
 
 就是选择所有位置为第2个的所有元素，不管是什么类型
 
 
 
-学员对nth-child的含义很容易产生误解，[请点击这里，观看白月黑羽给实战班学员答疑讲解 nth-child](https://www.bilibili.com/video/BV1Z4411o7TA?p=33)
-
 #### 父元素的倒数第n个子节点
 
-也可以反过来， 选择的是父元素的 `倒数第几个子节点` ，使用 `nth-last-child`
+也可以反过来， 选择的是父元素的 倒数第几个子节点 ，使用 `nth-last-child`
 
-比如：
+比如，选择每个子节点倒数第1个子元素，并且是p元素
 
-```html
+```css
 p:nth-last-child(1)
+/* 
+结果：
+<p>春夜喜雨</p>
+<p>西江月·夜行黄沙道中</p>
+*/
 ```
 
-就是选择第倒数第1个子元素，并且是p元素
+
 
 #### 父元素的第几个某类型的子节点
 
-我们可以指定选择的元素 是父元素的第几个 `某类型的` 子节点
+使用 `nth-of-type`，指定选择的元素 是父元素的第几个 `某类型的` 子节点，
 
-使用 `nth-of-type`
+比如，我们要选择 唐诗 和宋词 的第一个 作者，即选择的是 第2个子元素，并且是span类型
 
-比如，
+```css
+span:nth-child(2)
+/* 
+结果：
+<span>李白</span>
+<span>苏轼</span>
+*/
+```
 
-我们要选择 唐诗 和宋词 的第一个 作者，
-
-可以像上面那样思考：选择的是 第2个子元素，并且是span类型
-
-所以这样可以这样写 `span:nth-child(2)` ，
 
 
+还可以这样思考，选择的是 `第1个span类型` 的子元素，所以也可以这样写
 
-还可以这样思考，选择的是 `第1个span类型` 的子元素
+ ```css
+ span:nth-of-type(1)
+ /* 
+ 结果：
+ <span>李白</span>
+ <span>苏轼</span>
+ */
+ ```
 
-所以也可以这样写 `span:nth-of-type(1)`
+
 
 #### 父元素的倒数第几个某类型的子节点
 
@@ -778,25 +818,25 @@ p:nth-last-child(1)
 
 使用 `nth-last-of-type`
 
-像这样
-
-```html
+```css
 p:nth-last-of-type(2)
+
+/* 结果：<p>静夜思</p>  */
 ```
+
+
 
 #### 奇数节点和偶数节点
 
 如果要选择的是父元素的 `偶数节点`，使用 `nth-child(even)`
 
-比如
-
-```html
+```css
 p:nth-child(even)
 ```
 
 如果要选择的是父元素的 `奇数节点`，使用 `nth-child(odd)`
 
-```html
+```css
 p:nth-child(odd)
 ```
 
@@ -810,21 +850,29 @@ p:nth-child(odd)
 
 
 
-[点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=18)
-
 #### 相邻兄弟节点选择
 
 上面的例子里面，我们要选择 唐诗 和宋词 的第一个 作者
 
 还有一种思考方法，就是选择 h3 `后面紧跟着的兄弟节点` span。
 
-这就是一种 相邻兄弟 关系，可以这样写 `h3 + span`
+这就是一种 相邻兄弟 关系，可以这样写
+
+```css
+h3 + span
+```
 
 表示元素 紧跟关系的 是 `加号`
 
+
+
 #### 后续所有兄弟节点选择
 
-如果要选择是 选择 h3 `后面所有的兄弟节点` span，可以这样写 `h3 ~ span`
+如果要选择是 选择 h3 `后面所有的兄弟节点` span，可以这样写 
+
+```css
+h3 ~ span
+```
 
 
 
@@ -832,174 +880,15 @@ p:nth-child(odd)
 
 
 
-### EX-1 验证 `CSS` Selector语法
 
-[点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=14)
 
 
-那么我们怎么验证 `CSS` Selector 的语法是否正确选择了我们要选择的元素呢？
 
-当然可以像下面这样，写出Python代码，运行看看，能否操作成功
-
-```python
-element = wd.find_element_by_css_selector('#searchtext')
-element.input('输入的文本')
-```
-
-如果成功，说明选择元素的语法是正确的。
-
-
-
-但是这样做的问题就是：太麻烦了。
-
-当我们进行自动化开发的时候，有大量选择元素的语句，都要这样一个个的验证，就非常耗时间。
-
-
-
-由于 `CSS` Selector 是浏览器直接支持的，可以在浏览器 **开发者工具栏** 中验证。
-
-比如我们使用Chrome浏览器打开 http://cdn1.python3.vip/files/selenium/sample1.html
-
-按F12 打开 开发者工具栏
-
-如果我们要验证 下面的表达式
-
-```
-#bottom > .footer2  a
-```
-
-能否选中 这个元素
-
-```html
-<a href="http://www.miitbeian.gov.cn">苏ICP备88885574号</a>
-```
-
-可以这样做：
-
-==点击 Elements 标签后， 同时按 Ctrl 键 和 F 键， 就会出现下图箭头处的 搜索框==
-
-![白月黑羽Python3教程](http://cdn1.python3.vip/imgs/gh/36257654_38160687-1fe71db4-34f4-11e8-81e7-b65b5edd5e69.png)
-
-我们可以在里面输入任何 `CSS` Selector 表达式 ，如果能选择到元素， 右边的的红色方框里面就会显示出类似 `2 of 3` 这样的内容。
-
-of 后面的数字表示这样的表达式 `总共选择到几个元素`
-
-of 前面的数字表示当前黄色高亮显示的是 `其中第几个元素`
-
-上图中的 `1 of 1` 就是指 ： `CSS` 选择语法 `#bottom > .footer2 a`
-
-在当前网页上共选择到 1 个元素， 目前高亮显示的是第1个。
-
-如果我们输入 `.plant` 就会发现，可以选择到3个元素
-
-![白月黑羽Python3教程](http://cdn1.python3.vip/imgs/gh/36257654_38160817-d286d148-34f5-11e8-8488-db5bf83bc7f3.png)
-
-
-
-
-
-### EX-2 `CSS` Selector 选择子元素和后代元素
-
-[点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=12)
-
-HTML中， 元素 内部可以 **包含其他元素**， 比如 下面的 HTML片段
-
-```html
-<div id='container'>
-    
-    <div id='layer1'>
-        <div id='inner11'>
-            <span>内层11</span>
-        </div>
-        <div id='inner12'>
-            <span>内层12</span>
-        </div>
-    </div>
-
-    <div id='layer2'>
-        <div id='inner21'>
-            <span>内层21</span>
-        </div>
-    </div>
-    
-</div>
-```
-
-下面的一段话有些绕口， 请 大家细心 阅读：
-
-> id 为 `container` 的div元素 包含了 id 为 `layer1` 和 `layer2` 的两个div元素。
->
-> 这种包含是直接包含， 中间没有其他的层次的元素了。 所以 id 为 `layer1` 和 `layer2` 的两个div元素 是 id 为 `container` 的div元素 的 **直接子元素**
->
-> 而 id 为 `layer1` 的div元素 又包含了 id 为 `inner11` 和 `inner12` 的两个div元素。 中间没有其他层次的元素，所以这种包含关系也是 **直接子元素** 关系
->
-> id 为 `layer2` 的div元素 又包含了 id 为 `inner21` 这个div元素。 这种包含关系也是 **直接子元素** 关系
->
-> 
->
-> 而对于 id 为 `container` 的div元素来说， id 为 `inner11` 、`inner12` 、`inner22` 的元素 和 两个 `span类型的元素` 都不是 它的直接子元素， 因为中间隔了 几层。
->
-> 虽然不是直接子元素， 但是 它们还是在 `container` 的内部， 可以称之为它 的 **后代元素**
->
-> 后代元素也包括了直接子元素， 比如 id 为 `layer1` 和 `layer2` 的两个div元素 也可以说 是 id 为 `container` 的div元素 的 **直接子元素，同时也是后代子元素**
-
-
-
-1. 如果 `元素2` 是 `元素1` 的 直接子元素， `CSS` Selector 选择子元素的语法是这样的
-
-   > 元素1 > 元素2
-
-   中间用一个大于号 （我们可以理解为箭头号）
-
-   注意，最终选择的元素是 **元素2**， 并且要求这个 **元素2** 是 **元素1** 的直接子元素
-
-   
-
-   也支持更多层级的选择， 比如
-
-   > 元素1 > 元素2 > 元素3 > 元素4
-
-   就是选择 `元素1` 里面的子元素 `元素2` 里面的子元素 `元素3` 里面的子元素 `元素4` ， 最终选择的元素是 **元素4**
-
-   
-
-2. 如果 `元素2` 是 `元素1` 的 后代元素， `CSS` Selector 选择后代元素的语法是这样的
-
-   > 元素1   元素2
-
-   中间是一个或者多个空格隔开
-
-   最终选择的元素是 **元素2** ， 并且要求这个 **元素2** 是 **元素1** 的后代元素。
-
-
-   也支持更多层级的选择， 比如
-
-   > 元素1   元素2   元素3  元素4
-
-   最终选择的元素是 **元素4**
-
-
-```python
-element = wd.find_element_by_css_selector('#bottom > .footer2  a')
-```
-
-
-
-
-
-## 二、Xpath选择器
+## 三、Xpath选择器
 
 ### 1、Xpath语法简介
 
 
-
-[点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=27)
-
-前面我们学习了`CSS` 选择元素。
-
-大家可以发现非常灵活、强大。
-
-还有一种 灵活、强大 的选择元素的方式，就是使用 `Xpath` 表达式。
 
 XPath (XML Path Language) 是由国际标准化组织W3C指定的，用来在 XML 和 HTML 文档中选择节点的语言。
 
@@ -1007,20 +896,13 @@ XPath (XML Path Language) 是由国际标准化组织W3C指定的，用来在 XM
 
 
 
-既然已经有了`CSS`，为什么还要学习 Xpath呢？ 因为
-
-- 有些场景 用 `CSS` 选择web 元素 很麻烦，而xpath 却比较方便。
-- 另外 Xpath 还有其他领域会使用到，比如 爬虫框架 Scrapy， 手机App框架 Appium。
-
-[请点击打开这个网址](http://cdn1.python3.vip/files/selenium/test1.html)
-
 按F12打开调试窗口，点击 Elements标签。
 
-要验证 Xpath 语法是否能成功选择元素，也可以像 验证 `CSS` 语法那样，按组合键 Ctrl + F ，就会出现 搜索框
+要验证 Xpath 语法是否能成功选择元素，也可以像 验证 `CSS` 语法那样，按组合键 Ctrl + F ，就会出现 搜索框。
 
 
 
-xpath 语法中，整个HTML文档根节点用’/‘表示，如果我们想选择的是根节点下面的html节点，则可以在搜索框输入
+xpath 语法中，整个HTML文档根节点用’/‘表示，如果我们想选择的是根节点下面的html节点，则可以在搜索框输入。
 
 ```
 /html
@@ -1162,10 +1044,6 @@ Xpath 可以根据属性来选择元素。
 
 
 ### 3、按次序选择
-
-
-
-[点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=29)
 
 xpath类似`CSS`表达式，也可以根据次序选择元素。
 
@@ -1335,7 +1213,7 @@ xpath还可以选择 `前面的` 兄弟节点，用这样的语法 `preceding-si
 
 
 
-要了解更多Xpath选择语法，可以[点击这里，打开Xpath选择器参考手册](http://www.w3school.com.cn/xpath/index.asp)
+要了解更多Xpath选择语法，可以[打开Xpath选择器参考手册](http://www.w3school.com.cn/xpath/index.asp)
 
 
 
@@ -1344,8 +1222,6 @@ xpath还可以选择 `前面的` 兄弟节点，用这样的语法 `preceding-si
 ### selenium 使用Xpath注意点
 
 
-
-[点击这里，边看视频讲解，边学习以下内容](https://www.bilibili.com/video/av64421994/?p=31)
 
 我们来看一个例子
 
@@ -1990,9 +1866,104 @@ ac.move_to_element(
 
 
 
+# EX-1 CSS Selector 选择子元素和后代元素
 
 
-# EX-3 实战技巧
+
+HTML中， 元素 内部可以 **包含其他元素**， 比如 下面的 HTML片段
+
+```html
+<div id='container'>
+    
+    <div id='layer1'>
+        <div id='inner11'>
+            <span>内层11</span>
+        </div>
+        <div id='inner12'>
+            <span>内层12</span>
+        </div>
+    </div>
+
+    <div id='layer2'>
+        <div id='inner21'>
+            <span>内层21</span>
+        </div>
+    </div>
+    
+</div>
+```
+
+下面的一段话有些绕口， 请 细心 阅读：
+
+> id 为 `container` 的div元素 包含了 id 为 `layer1` 和 `layer2` 的两个div元素。
+>
+> 这种包含是直接包含， 中间没有其他的层次的元素了。 所以 id 为 `layer1` 和 `layer2` 的两个div元素 是 id 为 `container` 的div元素 的 **直接子元素**
+>
+> 而 id 为 `layer1` 的div元素 又包含了 id 为 `inner11` 和 `inner12` 的两个div元素。 中间没有其他层次的元素，所以这种包含关系也是 **直接子元素** 关系
+>
+> id 为 `layer2` 的div元素 又包含了 id 为 `inner21` 这个div元素。 这种包含关系也是 **直接子元素** 关系
+>
+> 
+>
+> 而对于 id 为 `container` 的div元素来说， id 为 `inner11` 、`inner12` 、`inner22` 的元素 和 两个 `span类型的元素` 都不是 它的直接子元素， 因为中间隔了 几层。
+>
+> 虽然不是直接子元素， 但是 它们还是在 `container` 的内部， 可以称之为它 的 **后代元素**
+>
+> 后代元素也包括了直接子元素， 比如 id 为 `layer1` 和 `layer2` 的两个div元素 也可以说 是 id 为 `container` 的div元素 的 **直接子元素，同时也是后代子元素**
+
+
+
+1. 如果 `元素2` 是 `元素1` 的 直接子元素， `CSS` Selector 选择子元素的语法是这样的
+
+	> 元素1 > 元素2
+
+	中间用一个大于号 （我们可以理解为箭头号）
+
+	注意，最终选择的元素是 **元素2**， 并且要求这个 **元素2** 是 **元素1** 的直接子元素
+
+	
+
+	也支持更多层级的选择， 比如
+
+	> 元素1 > 元素2 > 元素3 > 元素4
+
+	就是选择 `元素1` 里面的子元素 `元素2` 里面的子元素 `元素3` 里面的子元素 `元素4` ， 最终选择的元素是 **元素4**
+
+	
+
+2. 如果 `元素2` 是 `元素1` 的 后代元素， `CSS` Selector 选择后代元素的语法是这样的
+
+	> 元素1   元素2
+
+	中间是一个或者多个空格隔开
+
+	最终选择的元素是 **元素2** ， 并且要求这个 **元素2** 是 **元素1** 的后代元素。
+
+
+   也支持更多层级的选择， 比如
+
+   > 元素1   元素2   元素3  元素4
+
+   最终选择的元素是 **元素4**
+
+
+```python
+element = wd.find_element_by_css_selector('#bottom > .footer2  a')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# EX-2 实战技巧
 
 ## 1、 直接执行javascript
 
@@ -2043,9 +2014,7 @@ setTimeout(function(){debugger}, 5000)
 
 
 
-这句代码什么意思呢？
-
-表示在 5000毫秒后，执行 debugger 命令
+这句代码表示在 5000毫秒后，执行 debugger 命令
 
 执行该命令会 浏览器会进入debug状态。 debug状态有个特性， 界面被冻住， 不管我们怎么点击界面都不会触发事件。
 
@@ -2231,7 +2200,7 @@ driver.set_window_size(x, y)
 
 浏览网页的时候，我们的窗口标题是不断变化的，可以使用WebDriver的title属性来获取当前窗口的标题栏字符串。
 
-```py
+```python
 driver.title
 ```
 
@@ -2345,7 +2314,7 @@ ele.send_keys(r'h:\g02.png')
 
 ## 自动化Edge浏览器
 
-[点击这里，边看视频讲解，边学习下面的内容](https://www.bilibili.com/video/av64421994?p=32)
+
 
 自动化基于Chromium内核的 微软最新Edge浏览器，首先需要查看Edge的版本。
 
@@ -2355,7 +2324,7 @@ ele.send_keys(r'h:\g02.png')
 版本 79.0.309.71 (官方内部版本) (64 位)
 ```
 
-然后 [点击这里，打开Edge浏览器驱动下载网页](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/#downloads) ，并选择下载对应版本的驱动。
+然后 [打开Edge浏览器驱动下载网页](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/#downloads) ，并选择下载对应版本的驱动。
 
 在自动化代码中，指定使用Edge Webdriver类，并且指定 Edge 驱动路径，如下所示
 
